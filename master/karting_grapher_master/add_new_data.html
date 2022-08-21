@@ -7,6 +7,9 @@
     <title>Add new data</title>
     <link rel="stylesheet" href="../app.css">
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+        - matplotlib
+    </py-env>
 
 </head>
 <body>
@@ -21,16 +24,69 @@
                 <input type="file" id="myfile" accept=".txt">
             </div>
             <div class="simple-padding">
-                <a class="btn-medium">Create graph</a>
+                <a class="btn-medium" id="startBtn">Create graph</a>
             </div>
-            <h1 id="text">Test</h1>
+            <div id="plot"></div>
+            <py-script output="plot">
+                #used tutorial is in docs folder: https://www.jhanley.com/pyscript-files-and-file-systems-part-1/
+                import matplotlib.pyplot as plt
+                from pyodide import create_proxy
+                from js import document
+                import asyncio
+                #we have to use async functions when importing files from the local pc
+
+                async def getData(event):
+                    fileList = event.target.files.to_py()
+                    for f in fileList:
+                        data = await f.text()
+
+                    print("getData called")
+                    index = -1
+                    for line in data:
+                        line = line.strip()
+                        if line != "":
+                            if isHeader(line):
+                                headers.append(line)
+                                times.append([])
+                                index +=1
+                            else:
+                                times[index].append(float(line))
+                    #plotData(20)
+                    return
+                def plotData(amountOfYTicks):
+                    for i in range(0,len(times)):
+                        laps = range(0,len(times[i]))
+                        plt.plot(laps,times[i], marker='o', label=headers[i])
+                        plt.legend()
+                        plt.xlabel("lap")
+                        plt.ylabel("lap time")
+                        plt.xticks(laps)
+                        plt.yticks(getYTicks(times[i],amountOfYTicks))
+                        plt.grid(True)
+                    plt.show()
+                    plt.close()
+                def isHeader(strToCheck):
+                    for char in strToCheck:
+                        if str(char).isalpha():
+                            return True
+                    return False
+                def getYTicks(t :list,amountOfYTicks:int):
+                    amountOfYTicks -= 2
+                    inBetween = []
+                    maxT = max(t)
+                    minT = min(t)
+                    diff = maxT - minT
+                    diffOnScale = diff/amountOfYTicks
+                    for x in range(-1,amountOfYTicks+1):
+                        inBetween.append(minT + x*diffOnScale)
+                    return inBetween
+                
+                start_proxy = create_proxy(getData)
+                start_button = document.getElementById("startBtn")
+                start_button.addEventListener("click",start_proxy)
+                user_file = document.getElementById("myfile")
+            </py-script>
         </div>
-    </div>
-
-
-    <py-script>
-        pyscript.write("text",3)
-    </py-script>
-    
+    </div> 
 </body>
 </html>
