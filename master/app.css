@@ -30,14 +30,19 @@
   }
   
   h2 {
-    font-size: 4.2rem;
+    font-size: 2.5rem;
     margin-bottom: 4rem;
     font-weight: 700;
+    color: #526569;
+    margin: 0;
   }
   
   h3 {
-    font-size: 2.8rem;
+    font-size: 1.5rem;
     font-weight: 500;
+    color: #526569;
+    margin:0;
+    justify-content: left;
   }
   
   /* UTILITIES */
@@ -77,9 +82,19 @@
   .hidden {
     display: none;
   }
+
+  
+  .simple-padding{
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .informative-text{
+    justify-content: left;
+  }
   
   /* BUTTONS */
-  .btn {
+  .btn-big {
     font-size: 1.8rem;
     padding: 1rem 0;
     width: 20rem;
@@ -91,15 +106,30 @@
     background-color: #92abb0;
   }
   
-  .btn:hover {
+  .btn-big:hover ,.btn-medium:hover{
     cursor: pointer;
     box-shadow: 0 0.4rem 1.4rem 0 rgba(86, 185, 235, 0.5);
     transform: translateY(-0.1rem);
     transition: transform 150ms;
   }
   
-  .btn[disabled]:hover {
+  .btn-big[disabled]:hover,.btn-medium[disabled]:hover{
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
   }
+
+.btn-medium{
+    font-size: 1rem;
+    padding: 1rem 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: 30rem;
+    text-align: center;
+    border: 0.1rem solid white;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    color: black;
+    background-color: #92abb0;
+}
+
