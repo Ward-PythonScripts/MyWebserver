@@ -22,12 +22,24 @@
                 <input type="file" id="myfile" accept=".txt">
             </div>
             <canvas id="myChart" width="400" height="400"></canvas>
-            <script>
-                const fileSelector = document.getElementById('myfile');
-                fileSelector.addEventListener('change',(event)=>{
-                    const file = fileSelector.files[0];
-                    drawGraph(file,"myChart");
-                })
+            <script type="text/javascript">
+                document.getElementById('myfile')
+                    .addEventListener('change', function() {
+            
+                        var fr = new FileReader();
+                        var lines = [];
+                        var line = "";
+                        fr.onload = function() {
+                            for(const c of fr.result){
+                                if(c != " "){
+                                    //the charachter is something that needs to be added
+                                    
+                                }
+                            }
+                        }
+            
+                        fr.readAsText(this.files[0]);//starts reading, once it is done the result will be stored in the fr.result
+                    })
             </script>
         </div>
     </div> 

@@ -1,9 +1,5 @@
 function drawGraph(file,chart_identifier){
     //there should only be one file added -> this will be the one and only file
-    var fr=new FileReader();
-    var array = fr.readAsArrayBuffer(file);
-    console.log(array);
-    console.log("The length is",array.length);
 
     const ctx = document.getElementById(chart_identifier).getContext('2d');
             const myChart = new Chart(ctx, {

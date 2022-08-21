@@ -1,0 +1,13 @@
+This is where we left off.
+
+It is actually kind of a hasstle to just recode everything in javascript
+could be unnecesarry, would be very cool if we could save the added file locally on the webserver
+and then start a python script that will read from the file and add to a database or something
+than the javascript can read from the database and make a chart from the data found in the database
+
+
+found links:
+    executing shell command from html: https://stackoverflow.com/questions/5422093/run-a-program-from-a-local-webpage
+    chart.js libary: https://www.chartjs.org/docs/latest/
+    video explaining chart.js: https://youtu.be/5-ptp9tRApM?t=336
+    webdevelopment course I was following: https://www.udemy.com/course/build-a-quiz-app-with-html-css-and-javascript/learn/lecture/13703650?start=75#content
