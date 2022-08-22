@@ -20,4 +20,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("home.urls")),
     path("karting/",include("karting_grapher.urls")),
+    path("raspman/",include("raspman.urls")),
 ]

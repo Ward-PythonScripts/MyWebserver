@@ -11,3 +11,8 @@ found links:
     chart.js libary: https://www.chartjs.org/docs/latest/
     video explaining chart.js: https://youtu.be/5-ptp9tRApM?t=336
     webdevelopment course I was following: https://www.udemy.com/course/build-a-quiz-app-with-html-css-and-javascript/learn/lecture/13703650?start=75#content
+
+
+ALS GE NAAR PRODUCTIE WILT GAAN MOET GE NOG STATIC_ROOT INSTELLEN
+just take a look at the correct answer: https://stackoverflow.com/questions/13446325/why-is-my-static-css-not-working-in-django
+or at the documentation: https://docs.djangoproject.com/en/dev/howto/static-files/#serving-static-files-in-development

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Manager</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/app.css'%}" />
+
+</head>
+<body>
+    <div class="container">
+        <div id="home" class="flex-center flex-column">
+            <h1>Options</h1>
+            <div class="simple-padding">
+                <FORM method="post" action="cgi-bin/shutdown.py"> 
+                    <a class="btn-big" href="shutting_down/">Turn off Raspberry Pi</a>
+                </FORM>
+            </div>
+            <div class="simple-padding">
+                <FORM method="post" action="cgi-bin/restart.py"> 
+                    <a class="btn-big" href="restarting/">Restart Raspberry Pi</a>
+                </FORM>
+            </div>  
+        </div>
+</body>
+</html>
