@@ -1,0 +1,33 @@
+Followed tutorial: https://www.youtube.com/watch?v=sm1mokevMWk
+
+
+INCONTINUITIES IN THE TUTORIAL, don't add "django.apps.MainConfig" to the installed apps in the 
+settings.py file in the main project directory. But instead add "main"
+This seems to work fine so far, must have changed to make it easier to add installed apps.
+-hopefully
+
+
+
+This webserver will be working with django, in my case I use Virtual Enviroment general39
+	pip install django
+To start a new django project 
+	django-admin startproject <PROJECT-NAME>
+In order to launch your website, go into the recently made project folder (with the <PROJECT-NAME> name)
+And type the following
+	python manage.py runserver 
+This will show the local address where to website will be run in the command prompt
+
+In order to create a new webpage, also called a application, we need to type the following
+	python manage.py startapp <APPLICATION-NAME>
+This will create a new folder with the <APPLICATION-NAME>
+
+Whenever you make changes to the main project file, to add dependencies of an application for example.
+It is important that you migrate, so that the main settings files and such will be changed accordingly
+	python manage.py migrate 
+	
+When you have updated the models of a certain application, it is important that you make the migration
+	python manage.py makemigrations <APPLICATION-NAME>
+In order to apply this, you still need to migrate
+
+If you want to be able to insert stuff into your website you can open up the shell
+	python manage.py shell
