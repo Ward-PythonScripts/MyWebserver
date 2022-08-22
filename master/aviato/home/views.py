@@ -9,7 +9,4 @@ from django.http import HttpResponse
 
 def index(request):
     template = loader.get_template('home/index.html')
-    context = {
-        'smt': None
-    }
     return HttpResponse(template.render({},request))

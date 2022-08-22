@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add new data</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/app.css'%}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div id="home" class="flex-center flex-column">
+            <h2>Browse for the .txt file with your karting data</h2>
+            <div class="informative-text">
+                <h3>It is important that the times do not have letters or symbols on the same line and that the timings are seperated by a header(e.g. session1).</h3>
+                <h3>Empty lines are allowed to be in the txt file </h3>
+            </div>  
+            <div class="simple-padding">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" id="myfile" name="user_file" accept=".txt">
+                    <button type="submit">Upload File</button>
+                </form>
+            </div>
+        </div>
+    </div> 
+</body>
+</html>
