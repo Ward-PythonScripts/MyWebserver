@@ -21,4 +21,6 @@ urlpatterns = [
     path("", include("home.urls")),
     path("karting/",include("karting_grapher.urls")),
     path("raspman/",include("raspman.urls")),
+    path("notifier/",include("notifier.urls")),
+
 ]

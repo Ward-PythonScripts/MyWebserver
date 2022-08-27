@@ -1,0 +1,63 @@
+:root{
+  --border_collie: 0.6rem solid rgb(179, 0, 0);
+}
+
+.block{
+    width: 80vw;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+h1{
+    color:red;
+    margin-bottom:0rem;
+    text-align:center;
+    font-size: 6rem;
+  }
+
+h2{
+  color:black;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+
+
+
+
+
+.recipient{
+  padding: 0;
+  border: var(--border_collie);
+  margin:0;
+  background-color: rgb(78, 76, 76);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.top_bar{
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+}
+
+
+/* BUTTONS */
+.symbol_button,.header_button{
+  background-color: transparent;
+  border: 0;
+}
+
+
+.symbol_button:hover{
+  background-color: darkgrey;
+  cursor: pointer;
+}
+
+.header_button:hover{
+  background-color: rgba(255, 0, 0, 0.363);
+  cursor:pointer;
+}

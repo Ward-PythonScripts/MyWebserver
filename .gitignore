@@ -2,3 +2,24 @@
 *.pyc
 master/aviato/db.sqlite3
 master/aviato/media/documents/
+*.db
+master/mail_listener/Backup-codes-kartingmarkel.txt
+master/mail_listener/credentials copy.json
+master/mail_listener/credentials.json
+master/mail_listener/credentials.py
+master/mail_listener/email.txt
+*.rar
+master/dump1.txt
+master/dump2.txt
+master/mail_listener/email.txt
+master/mail_listener/credentials.py
+master/mail_listener/client_secret_532319406418-ol2h820h434v8fdmkmub649lgjvqc2fg.apps.googleusercontent.com.json
+master/mail_listener/credentials copy.json
+master/mail_listener/credentials.json
+master/mail_listener/ultra-ridge-360222-671361b0ca25.json
+master/mail_listener/Backup-codes-kartingmarkel.txt
+master/karting.db
+master/dump1.txt
+master/dump2.txt
+master/mail_listener/service.json
+

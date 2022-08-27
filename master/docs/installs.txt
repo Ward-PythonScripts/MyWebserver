@@ -1,0 +1,3 @@
+gmail: pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+imapclient: pip install imapclient
+    docs: https://imapclient.readthedocs.io/en/master/

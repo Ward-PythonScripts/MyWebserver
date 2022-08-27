@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "home",
     "karting_grapher",
     "raspman",
+    "notifier",
 
 ]
 

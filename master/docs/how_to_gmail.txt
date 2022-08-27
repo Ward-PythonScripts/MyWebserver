@@ -1,0 +1,7 @@
+You should go to your new account
+then go to to https://myaccount.google.com/
+there click on security
+when you scroll down you will see signing in to google
+there you have to enable the to step verification
+if done so, you can get an app password which you can use 
+to login just like you would login with the usual master password

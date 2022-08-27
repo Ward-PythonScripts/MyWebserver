@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifier</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/app.css'%}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/notifier.css'%}"/>
+    <!-- for some reason I had to put the block in boxes.css if not it would be overwritten
+    and no block would be displayed at all
+    might be good coding practice ?? who knows...-->
+    
+</head>
+<body>
+    <h1 style="font-size: 8rem;text-align: left;color: white;">Notifier</h1>
+
+    <div class="container" style="align-items: flex-start;">
+        <div id="main_flex" class="flex-center flex-column">
+
+            <div id="pack_everything_together">
+                <div class="top_bar">
+                    <h1 style="padding-right: 4rem;">E-mail recipients</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button style="align-self:flex-end;" name="add" class="header_button">
+                            <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
+                        </button>
+                    </form>
+                </div>
+                <div class="block">
+                    {% for recipient in recipients %}
+                    <div class="recipient">
+                        <h2>{{recipient.name}}</h2>
+                        <h2>{{recipient.mail}}</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            <button class="symbol_button" name="edit" value="{{recipient.id}}">
+                                <img src="{% static 'sprites/edit.svg' %}"></img>
+                            </button>
+                        </form>
+                        <form method="post">
+                            {% csrf_token %}
+                            <button class="symbol_button" name="remove" value="{{recipient.id}}">
+                                <img src="{% static 'sprites/delete.svg' %}"></img>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            
+            
+        </div>
+    </div>
+    
+</body>
+</html>
+
