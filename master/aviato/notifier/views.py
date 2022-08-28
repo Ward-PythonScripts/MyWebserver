@@ -25,7 +25,7 @@ def index(request):
                 print("They are trying to remove the recipient",id)
                 notifier_backend.remove_recipient(id)
             else:
-                mail = data.get('mail')
+                mail = data.get('mail') 
                 name = data.get('name')
                 if mail and name is not None:
                     #want to add a new recipient to the list

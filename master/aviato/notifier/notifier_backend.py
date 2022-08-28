@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 class Recipient():
     def __init__(self,id,name,mail,preference) -> None:
@@ -6,6 +7,7 @@ class Recipient():
         self.name = name
         self.mail = mail
         self.preference = preference
+    
 
 
 def get_all_recipients():
@@ -52,6 +54,12 @@ def update_recipient(name,mail,id):
 
 
 
-CREATE_STATEMENT = 'CREATE TABLE "recipient" ("Id"	INTEGER NOT NULL,"Name"	TEXT NOT NULL,"mail"	TEXT NOT NULL,"preference"	TEXT NOT NULL,PRIMARY KEY("Id" AUTOINCREMENT))'
+CREATE_STATEMENT = """CREATE TABLE "recipient" (
+	"Id"	INTEGER NOT NULL,
+	"name"	TEXT NOT NULL,
+	"mail"	TEXT NOT NULL,
+	"preference"	TEXT NOT NULL DEFAULT '{"allowed":"all","denied":"none"}',
+	PRIMARY KEY("Id" AUTOINCREMENT)
+)"""
 TABLE_REC = "recipient"
 DB_REF = "../notifier.db"

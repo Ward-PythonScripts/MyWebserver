@@ -65,7 +65,20 @@ might be good coding practice ?? who knows... probably because of the browser ca
                         }
 
                         function pref_callback(traget_id){
+                            document.getElementById('pref-window').style.display = 'flex';
+                            var json_var = '{{recipient.preference|safe}}';
+                            var pref = JSON.parse(json_var);
+                            var allowed = pref.allowed;
+                            var denied = pref.denied;
+                            if(typeof allowed === 'string') {
+                                //will either be all or none
+                                if(allowed == "all"){
 
+                                }
+                            }
+                            else{
+                                //is a whole list
+                            }
                         }
                     </script>
                     <form method="post">
@@ -85,8 +98,9 @@ might be good coding practice ?? who knows... probably because of the browser ca
     </div>
 </div>
 
+{%endblock%}
 
-
+{%block modal%}
 <!-- Modal Section -->
 <div class="background-modal">
     <div class="modal-content">
@@ -127,4 +141,29 @@ might be good coding practice ?? who knows... probably because of the browser ca
         </form>
     </div>
 </div>
+
+<div class="background-modal" id="pref-window">
+    <div class="modal-content">
+        <div class="close" id="pref-close">+</div>
+        <script>
+            document.getElementById("pref-close").addEventListener('click',
+            function() {
+                document.getElementById("pref-window").style.display = 'none';
+            });
+        </script>
+        <h3>Here you can change the recipient's preferences</h3>
+        <div style="display:flex;justify-content:space-around">
+            <div>
+                <h3>Allowed</h3>
+                <div class="pref-block" id="allowed">
+                    <h3>all</h3>
+                </div>
+            </div>
+            <div>
+                <h3>Denied</h3>
+                <div class="pref-block" id="denied">
+                    <h3>none</h3>
+                </div>
+            </div>
+        </div>
 {% endblock %}

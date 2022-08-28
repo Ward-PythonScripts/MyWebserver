@@ -43,3 +43,4 @@ master/mail_listener/credentials.py
 master/mail_listener/email.txt
 master/mail_listener/service.json
 master/notifier.db
+master/mailing/old_game_deals

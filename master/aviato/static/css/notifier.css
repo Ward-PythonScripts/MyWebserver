@@ -56,6 +56,11 @@ h3{
   align-items: baseline;
 }
 
+.pref-block{
+  border:0.4rem solid red;
+  
+}
+
 /* POPUP WINDOW */
 
 .background-modal,.background-edit{
