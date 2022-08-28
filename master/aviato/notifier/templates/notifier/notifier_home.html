@@ -1,88 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-    
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifier</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/app.css'%}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/notifier.css'%}"/>
-    <!-- for some reason I had to put the block in boxes.css if not it would be overwritten
-    and no block would be displayed at all
-    might be good coding practice ?? who knows...-->
-    
-</head>
-<body>
-    <h1 style="font-size: 8rem;text-align: left;color: white;">Notifier</h1>
+{% extends 'home/base.html' %}
+{% load static %}
 
-    <div class="container" style="align-items: flex-start;">
-        <div id="main_flex" class="flex-center flex-column">
 
-            <div id="pack_everything_together">
-                <div class="top_bar">
-                    <h1 style="padding-right: 4rem;">E-mail recipients</h1>
-                    <button style="align-self:flex-end;" name="add" class="header_button" onclick="add_callback()">
-                        <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
+    
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/notifier.css'%}"/>
+<title>Notifier</title>
+<!-- for some reason I had to put the block in boxes.css if not it would be overwritten
+and no block would be displayed at all
+might be good coding practice ?? who knows... probably because of the browser cashe that wasn't properly loading-->
+{% endblock %}
+    
+{% block body%}
+<h1 style="font-size: 8rem;text-align: left;color: white;margin-top:0;">Notifier</h1>
+
+<div class="container" style="align-items: flex-start;">
+    <div id="main_flex" class="flex-center flex-column">
+
+        <div id="pack_everything_together">
+            <div class="top_bar">
+                <h1 style="padding-right: 4rem;">E-mail recipients</h1>
+                <button style="align-self:flex-end;" name="add" class="header_button" onclick="add_callback()">
+                    <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
+                </button>
+                <script>
+                    function add_callback(){
+                        document.querySelector('.background-modal').style.display = 'flex';
+                    }
+                </script>
+            </div>
+            <div class="block">
+                {% for recipient in recipients %}
+                <div name="{{recipient.id}}" class="recipient">
+                    <h2 name="nameh2">{{recipient.name}}</h2>
+                    <h2 name="mailh2">{{recipient.mail}}</h2>
+                    <button class="symbol_button" name="preferences" value="{{recipient.id}}" onclick="pref_callback(this.value)">
+                        <img src="{% static 'sprites/filter.svg' %}"></img>
+                    </button>
+                    <button class="symbol_button" name="edit" value="{{recipient.id}}" onclick="edit_callback(this.value)">
+                        <img src="{% static 'sprites/edit.svg' %}"></img>
                     </button>
                     <script>
-                        function add_callback(){
-                            document.querySelector('.background-modal').style.display = 'flex';
+                        function edit_callback(target_id){
+                            document.querySelector('.background-edit').style.display = 'flex';
+                            //change the placeholders in the popup to match the current data of the recipient
+                            var target_div = document.querySelector('[name=\''+target_id+'\']');
+                            var name = target_div.querySelector('[name="nameh2"]').textContent;
+                            var mail = target_div.querySelector('[name="mailh2"]').textContent;
+
+                            var children = document.querySelector('.background-edit').querySelector('.edit-content').querySelectorAll('.modal-input');
+                            for(var i = 0; i < children.length; i++){
+                                var child = children[i];
+                                if(child.name == 'name_edit'){
+                                    child.value = name;
+                                }
+                                else if(child.name == "mail_edit"){
+                                    child.value = mail;
+                                }
+                                else if(child.name == "id"){
+                                    child.value = target_id;
+                                }
+                            }
+
+                        }
+
+                        function pref_callback(traget_id){
+
                         }
                     </script>
-                </div>
-                <div class="block">
-                    {% for recipient in recipients %}
-                    <div name="{{recipient.id}}" class="recipient">
-                        <h2 name="nameh2">{{recipient.name}}</h2>
-                        <h2 name="mailh2">{{recipient.mail}}</h2>
-                        <button class="symbol_button" name="edit" value="{{recipient.id}}" onclick="edit_callback(this.value)">
-                            <img src="{% static 'sprites/edit.svg' %}"></img>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button class="symbol_button" name="remove" value="{{recipient.id}}">
+                            <img src="{% static 'sprites/delete.svg' %}"></img>
                         </button>
-                        <script>
-                            function edit_callback(target_id){
-                                document.querySelector('.background-edit').style.display = 'flex';
-                                //change the placeholders in the popup to match the current data of the recipient
-                                var target_div = document.querySelector('[name=\''+target_id+'\']');
-                                var name = target_div.querySelector('[name="nameh2"]').textContent;
-                                var mail = target_div.querySelector('[name="mailh2"]').textContent;
-
-                                var children = document.querySelector('.background-edit').querySelector('.edit-content').querySelectorAll('.modal-input');
-                                for(var i = 0; i < children.length; i++){
-                                    var child = children[i];
-                                    if(child.name == 'name_edit'){
-                                        child.value = name;
-                                    }
-                                    else if(child.name == "mail_edit"){
-                                        child.value = mail;
-                                    }
-                                    else if(child.name == "id"){
-                                        child.value = target_id;
-                                    }
-                                }
-
-                            }
-                        </script>
-                        <form method="post">
-                            {% csrf_token %}
-                            <button class="symbol_button" name="remove" value="{{recipient.id}}">
-                                <img src="{% static 'sprites/delete.svg' %}"></img>
-                            </button>
-                        </form>
-                    </div>
-                    {% endfor %}
+                    </form>
                 </div>
-
+                {% endfor %}
             </div>
 
-            
-            
         </div>
+
+        
+        
     </div>
-    
-</body>
-</html>
+</div>
+
+
 
 <!-- Modal Section -->
 <div class="background-modal">
@@ -124,3 +127,4 @@
         </form>
     </div>
 </div>
+{% endblock %}
