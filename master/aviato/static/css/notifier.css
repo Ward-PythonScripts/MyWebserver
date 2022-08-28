@@ -2,6 +2,14 @@
   --border_collie: 0.6rem solid rgb(179, 0, 0);
 }
 
+html,body{
+  max-width: 100%;
+  overflow-x: hidden;
+
+  max-height: 100%;
+  overflow-y: hidden;
+}
+
 .block{
     width: 80vw;
     margin: 0;
@@ -22,6 +30,10 @@ h2{
   text-align: left;
 }
 
+h3{
+  color:red;
+  font-size: 3rem;
+}
 
 
 
@@ -44,6 +56,49 @@ h2{
   align-items: baseline;
 }
 
+/* POPUP WINDOW */
+
+.background-modal,.background-edit{
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  position: absolute;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+}
+
+.modal-content,.edit-content{
+  width: 500px;
+  height: auto;
+  background-color: black;
+  border-radius: 6px;
+  text-align: center;
+  padding: 20px;
+  padding-top: 30px;
+  position: relative; /*This makes sure that children of this div can position them relative to this object
+                      when using position: absolute;*/
+
+
+}
+
+.modal-input{
+  width:50%;
+  display:block; /*When using display block, you're basically saying ay yo this whole line is mine*/
+  margin: 15px auto;
+}
+
+.close{
+  position: absolute;
+  top: 0;
+  right: 14px;
+  font-size: 38px;
+  transform: rotate(45deg);
+  color:white;
+  cursor: pointer;
+}
 
 /* BUTTONS */
 .symbol_button,.header_button{

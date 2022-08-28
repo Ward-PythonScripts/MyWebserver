@@ -23,24 +23,47 @@
             <div id="pack_everything_together">
                 <div class="top_bar">
                     <h1 style="padding-right: 4rem;">E-mail recipients</h1>
-                    <form method="post">
-                        {% csrf_token %}
-                        <button style="align-self:flex-end;" name="add" class="header_button">
-                            <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
-                        </button>
-                    </form>
+                    <button style="align-self:flex-end;" name="add" class="header_button" onclick="add_callback()">
+                        <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
+                    </button>
+                    <script>
+                        function add_callback(){
+                            document.querySelector('.background-modal').style.display = 'flex';
+                        }
+                    </script>
                 </div>
                 <div class="block">
                     {% for recipient in recipients %}
-                    <div class="recipient">
-                        <h2>{{recipient.name}}</h2>
-                        <h2>{{recipient.mail}}</h2>
-                        <form method="post">
-                            {% csrf_token %}
-                            <button class="symbol_button" name="edit" value="{{recipient.id}}">
-                                <img src="{% static 'sprites/edit.svg' %}"></img>
-                            </button>
-                        </form>
+                    <div name="{{recipient.id}}" class="recipient">
+                        <h2 name="nameh2">{{recipient.name}}</h2>
+                        <h2 name="mailh2">{{recipient.mail}}</h2>
+                        <button class="symbol_button" name="edit" value="{{recipient.id}}" onclick="edit_callback(this.value)">
+                            <img src="{% static 'sprites/edit.svg' %}"></img>
+                        </button>
+                        <script>
+                            function edit_callback(target_id){
+                                document.querySelector('.background-edit').style.display = 'flex';
+                                //change the placeholders in the popup to match the current data of the recipient
+                                var target_div = document.querySelector('[name=\''+target_id+'\']');
+                                var name = target_div.querySelector('[name="nameh2"]').textContent;
+                                var mail = target_div.querySelector('[name="mailh2"]').textContent;
+
+                                var children = document.querySelector('.background-edit').querySelector('.edit-content').querySelectorAll('.modal-input');
+                                for(var i = 0; i < children.length; i++){
+                                    var child = children[i];
+                                    if(child.name == 'name_edit'){
+                                        child.value = name;
+                                    }
+                                    else if(child.name == "mail_edit"){
+                                        child.value = mail;
+                                    }
+                                    else if(child.name == "id"){
+                                        child.value = target_id;
+                                    }
+                                }
+
+                            }
+                        </script>
                         <form method="post">
                             {% csrf_token %}
                             <button class="symbol_button" name="remove" value="{{recipient.id}}">
@@ -61,3 +84,43 @@
 </body>
 </html>
 
+<!-- Modal Section -->
+<div class="background-modal">
+    <div class="modal-content">
+        <div class="close">+</div>
+        <script>
+            document.querySelector('.close').addEventListener('click',
+            function() {
+                document.querySelector('.background-modal').style.display = 'none';
+            });
+        </script>
+        <h3>Enter the new e-mail recipients data</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input class="modal-input" type="text" name="name" placeholder="Name" required>
+            <input class="modal-input" type="text" name="mail" placeholder="e-mail adress" required>
+            <input type="submit">
+        </form>
+    </div>
+</div>
+
+<div class="background-edit">
+    <div class="edit-content">
+        <div class="close">+</div>
+        <script>
+            document.querySelector('.background-edit').querySelector('.close').addEventListener('click',
+            function() {
+                console.log("clicked");
+                document.querySelector('.background-edit').style.display = 'none';
+            });
+        </script>
+        <h3>Here you can edit the recipient's data</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input class="modal-input" type="text" name="name_edit" value="Name" required>
+            <input class="modal-input" type="text" name="mail_edit" value="e-mail adress" required>
+            <input class="modal-input" type="hidden" name="id" value="hopefully_not_this_anymore">
+            <input type="submit">
+        </form>
+    </div>
+</div>

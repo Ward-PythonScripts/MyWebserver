@@ -12,10 +12,12 @@ def index(request):
 
     if request.method == 'POST':
         data = request.POST
-        id = data.get('edit')
-        if id is not None:
+        name = data.get('name_edit')
+        mail = data.get('mail_edit')
+        id = data.get('id')
+        if name and mail and id is not None:
             #an edit button was clicked
-            print("They are trying to edit the recipient",id)
+            notifier_backend.update_recipient(name,mail,id)
         else:
             id = data.get('remove')
             if id is not None:
@@ -23,9 +25,12 @@ def index(request):
                 print("They are trying to remove the recipient",id)
                 notifier_backend.remove_recipient(id)
             else:
-                id = data.get('add')
-                if id is not None:
+                mail = data.get('mail')
+                name = data.get('name')
+                if mail and name is not None:
                     #want to add a new recipient to the list
+                    notifier_backend.add_recipient(name=name,mail=mail)
+
                     
             
 
