@@ -24,3 +24,5 @@ urlpatterns = [
     path("notifier/",include("notifier.urls")),
 
 ]
+
+
