@@ -3,7 +3,6 @@ from . import game_reader
 from schedule import Scheduler
 import threading
 import time
-
 #method below from stack overflow: https://stackoverflow.com/questions/44896618/django-run-a-function-every-x-seconds
 
 
@@ -42,5 +41,6 @@ Scheduler.run_continuously = run_continuously
 
 def start_scheduler():
     scheduler = Scheduler()
-    scheduler.every(5).seconds.do(game_reader.main)
+    #scheduler.every(10).seconds.do(game_reader.main)
+    game_reader.main()
     scheduler.run_continuously()

@@ -10,6 +10,7 @@ Module that will scan the reddit subreddit r/GameDeals and return all the free g
 """
 
 from genericpath import exists
+from logging import exception
 import pickle
 import praw
 import time
@@ -20,7 +21,6 @@ import re
 from . import credentials
 from . import gamedeal_mailer
 
-SORT_ORDER = {"Steam":0,"Epic Games":1}
 UTC_PICKLE_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'gameDealsFiles','utc.pk'))
 STDERR_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'gameDealsFiles','stderror.log'))
 
@@ -60,12 +60,11 @@ def loadUTC():
             return new_time
         except EOFError:
             return -1
-loadUTC()
 
 
 def getFromReddit():
     freeGames = []
-    lastCheckTime = loadUTC()
+    lastCheckTime = 0#loadUTC()
     if lastCheckTime == -1:
         #first time checking, we could check every game or we could just stop
         exit(99999)
@@ -121,17 +120,22 @@ def containsException(target):
         return False
 
 def sendGames(freeGames):
-    freeGames.sort(key=lambda x: SORT_ORDER.get(x.cat,len(SORT_ORDER)))
-    mailer = gamedeal_mailer.GameDealMailSender()
-    for free_game in freeGames:
-        mailer.add_new_deal(mailer)
-    mailer.send_mail()
+    print("Going to sort the games")
+    try:
+        mailer = gamedeal_mailer.GameDealMailSender()
+        for free_game in freeGames:
+            mailer.add_new_deal(free_game)
+        mailer.send_mail()
+    except Exception as e:
+        print(str(e))
+
+
 
 
 def main():
-    print("main")
-    return
-    changeStdOut()
+    print("Starting gamedeals checker")
+    #changeStdOut()
     freeGames = getFromReddit()
     sendGames(freeGames)
+    print("gamedeals checker shutting down")
     return
