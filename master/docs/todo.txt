@@ -23,3 +23,4 @@ __________________________________________________
 STUFF TO TURN BACK ON
 jobs.py, is not scheduled to be repeated anymore, is only going once
 game_reader.py:67 make it loadUTC again
+gamedeal_mailer.py -> turn on the sending of the e-mail again

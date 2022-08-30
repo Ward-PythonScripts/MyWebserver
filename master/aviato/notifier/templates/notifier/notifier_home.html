@@ -34,53 +34,14 @@ might be good coding practice ?? who knows... probably because of the browser ca
                 <div name="{{recipient.id}}" class="recipient">
                     <h2 name="nameh2">{{recipient.name}}</h2>
                     <h2 name="mailh2">{{recipient.mail}}</h2>
+                    <p hidden id="preferences-of-{{recipient.id}}">{{recipient.preference}}</p>
                     <button class="symbol_button" name="preferences" value="{{recipient.id}}" onclick="pref_callback(this.value)">
                         <img src="{% static 'sprites/filter.svg' %}"></img>
                     </button>
                     <button class="symbol_button" name="edit" value="{{recipient.id}}" onclick="edit_callback(this.value)">
                         <img src="{% static 'sprites/edit.svg' %}"></img>
                     </button>
-                    <script>
-                        function edit_callback(target_id){
-                            document.querySelector('.background-edit').style.display = 'flex';
-                            //change the placeholders in the popup to match the current data of the recipient
-                            var target_div = document.querySelector('[name=\''+target_id+'\']');
-                            var name = target_div.querySelector('[name="nameh2"]').textContent;
-                            var mail = target_div.querySelector('[name="mailh2"]').textContent;
-
-                            var children = document.querySelector('.background-edit').querySelector('.edit-content').querySelectorAll('.modal-input');
-                            for(var i = 0; i < children.length; i++){
-                                var child = children[i];
-                                if(child.name == 'name_edit'){
-                                    child.value = name;
-                                }
-                                else if(child.name == "mail_edit"){
-                                    child.value = mail;
-                                }
-                                else if(child.name == "id"){
-                                    child.value = target_id;
-                                }
-                            }
-
-                        }
-
-                        function pref_callback(traget_id){
-                            document.getElementById('pref-window').style.display = 'flex';
-                            var json_var = '{{recipient.preference|safe}}';
-                            var pref = JSON.parse(json_var);
-                            var allowed = pref.allowed;
-                            var denied = pref.denied;
-                            if(typeof allowed === 'string') {
-                                //will either be all or none
-                                if(allowed == "all"){
-
-                                }
-                            }
-                            else{
-                                //is a whole list
-                            }
-                        }
-                    </script>
+                    
                     <form method="post">
                         {% csrf_token %}
                         <button class="symbol_button" name="remove" value="{{recipient.id}}">
@@ -97,6 +58,65 @@ might be good coding practice ?? who knows... probably because of the browser ca
         
     </div>
 </div>
+<script>
+    function edit_callback(target_id){
+        document.querySelector('.background-edit').style.display = 'flex';
+        //change the placeholders in the popup to match the current data of the recipient
+        var target_div = document.querySelector('[name=\''+target_id+'\']');
+        var name = target_div.querySelector('[name="nameh2"]').textContent;
+        var mail = target_div.querySelector('[name="mailh2"]').textContent;
+
+        var children = document.querySelector('.background-edit').querySelector('.edit-content').querySelectorAll('.modal-input');
+        for(var i = 0; i < children.length; i++){
+            var child = children[i];
+            if(child.name == 'name_edit'){
+                child.value = name;
+            }
+            else if(child.name == "mail_edit"){
+                child.value = mail;
+            }
+            else if(child.name == "id"){
+                child.value = target_id;
+            }
+        }
+
+    }
+
+    function pref_callback(target_id){
+        document.getElementById('pref-window').style.display = 'flex';
+        var json_var = document.getElementById("preferences-of-"+String(target_id)).textContent;
+        var pref = JSON.parse((json_var));
+        var allowed = pref.allowed;
+        var denied = pref.denied;
+        inject_specific(allowed,"allowed-specific");
+        inject_specific(denied,"denied-specific");
+    }
+    function inject_specific(content,target_id){
+        console.log(content,target_id);
+        if(!(typeof content === 'string')) {
+            //won't be all or none so need to inject the specific options
+            var specific_div = document.getElementById(target_id);
+            for(let i = 0;i < content.length;i ++){
+                specific_div.appendChild(create_checkbox_field(content[i]));
+            }
+        }
+    }
+
+    function create_checkbox_field(denied){
+        //will be used for allowed as well, look at denied as just a name to give the parameter
+        var created_div = document.createElement("div");
+        created_div.setAttribute("id",denied);
+        var created_label = document.createElement("label");
+        created_label.setAttribute("for",denied+"-cb");
+        created_label.textContent = denied;
+        var created_cb = document.createElement("input");
+        created_cb.setAttribute("type","checkbox");
+        created_cb.setAttribute("id",denied+"-cb");
+        created_div.appendChild(created_label);
+        created_div.appendChild(created_cb);
+        return created_div;
+    }
+</script>
 
 {%endblock%}
 
@@ -156,13 +176,33 @@ might be good coding practice ?? who knows... probably because of the browser ca
             <div>
                 <h3>Allowed</h3>
                 <div class="pref-block" id="allowed">
-                    <h3>all</h3>
+                    <div id="allowed-all">
+                        <label for="allowed-all-cb">All</label>
+                        <input type="checkbox" id="allowed-all-cb">
+                    </div>
+                    <div id="allowed-none">
+                        <label for="allowed-none-cb">None</label>
+                        <input type="checkbox" id="allowed-none-cb">
+                    </div>
+                    <div id="allowed-specific">
+                        <!-- will be injected from js-->
+                    </div>
                 </div>
             </div>
             <div>
                 <h3>Denied</h3>
                 <div class="pref-block" id="denied">
-                    <h3>none</h3>
+                    <div id="denied-all">
+                        <label for="denied-all-cb">All</label>
+                        <input type="checkbox" id="denied-all-cb">
+                    </div>
+                    <div id="denied-none">
+                        <label for="allowed-none-cb">None</label>
+                        <input type="checkbox" id="denied-none-cb">
+                    </div>
+                    <div id="denied-specific">
+                        <!-- will be injected from js-->
+                    </div>
                 </div>
             </div>
         </div>

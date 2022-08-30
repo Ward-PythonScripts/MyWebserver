@@ -1,5 +1,6 @@
 import email
 from email.message import EmailMessage
+import json
 import smtplib
 import ssl
 
@@ -23,7 +24,7 @@ class GameDealMailSender:
         self.gamedeals.append(gamedeal)
     
     def send_mail(self):
-        #sort first
+        #sort first.
         try:
             sorted_games = sorted(self.gamedeals,key=lambda x: (SORT_ORDER.get(str(x.cat).upper(),len(SORT_ORDER)),x.cat),reverse=False)
             
@@ -33,13 +34,13 @@ class GameDealMailSender:
                 prevCat = ""
                 body = ""
                 for sorted_game in sorted_games:
-                    
-                    if prevCat != sorted_game.cat:
-                        #new category
-                        body += "\n" + sorted_game.cat + "\n\n"
-                        prevCat = sorted_game.cat
-                    body += sorted_game.title + "\n"
-                    body += "https://www.reddit.com"+ sorted_game.reddit + "\n"
+                    if check_if_cat_is_wanted(recipient=recipient,game=sorted_game):
+                        if prevCat != sorted_game.cat:
+                            #new category
+                            body += "\n" + sorted_game.cat + "\n\n"
+                            prevCat = sorted_game.cat
+                        body += sorted_game.title + "\n"
+                        body += "https://www.reddit.com"+ sorted_game.reddit + "\n"
                 
                 #build the email
                 em = EmailMessage()
@@ -52,7 +53,7 @@ class GameDealMailSender:
 
                 with smtplib.SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
                     smtp.login(self.email,self.email_password)
-                    smtp.sendmail(self.email,mail_rec,em.as_string())
+                    #smtp.sendmail(self.email,mail_rec,em.as_string())
                     smtp.close()
 
 
@@ -63,7 +64,34 @@ class GameDealMailSender:
         except Exception as e:
             print(str(e))
 
-"""
-SORT_ORDER = {"Steam":0,"Epic Games":1}
-sorted_games = freeGames.sort(key=lambda x: SORT_ORDER.get(x.cat,len(SORT_ORDER)))
-"""
+def check_if_cat_is_wanted(recipient:Recipient,game:freeGame):
+    try:
+        cat_json = json.loads(recipient.preference)
+        allowed = cat_json['allowed']
+        denied = cat_json['denied']
+        if allowed == 'none':
+            return False
+        if allowed == 'all':
+            #check if there is some stuff denied
+            if isinstance(denied,str):
+                #will either be all or none
+                if denied == 'all':
+                    return False
+                else:
+                    return True
+            else:
+                #is list with all the denied mail_adresses
+                for denied_cat in denied:
+                    if game.cat == denied_cat:
+                        return False
+                #cat wasn't in the list of denied addresses
+                return True
+        else:
+            #client has given specific list of allowed websites
+            for allowed_cat in allowed:
+                if game.cat == allowed_cat:
+                    return True
+            #category wasn't one that was allowed
+            return False
+    except Exception as e:
+        print(str(e))

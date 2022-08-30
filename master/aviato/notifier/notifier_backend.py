@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-from .containers import Recipient
+from .containers import Recipient,freeGame
     
 
 
@@ -46,15 +46,43 @@ def update_recipient(name,mail,id):
     cursor.close()
     conn.close()
 
+def add_categories_if_not_exists(cats):
+    print(cats)
+    conn = sqlite3.connect(DB_REF)
+    #is defined in the category table that we want to have only unique categories
+    insert_statement = "INSERT OR IGNORE INTO " + TABLE_CAT + " (category) VALUES (?);"
+    cursor = conn.cursor()
+    cursor.executemany(insert_statement,cats)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def get_categories():
+    conn = sqlite3.connect(DB_REF)
+    categories = []
+    results = conn.execute("Select * from " + TABLE_REC).fetchall()
+    for row in results:
+        cat = row[1]
+
+        categories.append(cat)
+    conn.close()
+    return categories
 
 
 
-CREATE_STATEMENT = """CREATE TABLE "recipient" (
+
+CREATE_STATEMENT_RECIPIENT = """CREATE TABLE "recipient" (
 	"Id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL,
 	"mail"	TEXT NOT NULL,
 	"preference"	TEXT NOT NULL DEFAULT '{"allowed":"all","denied":"none"}',
 	PRIMARY KEY("Id" AUTOINCREMENT)
 )"""
+CREATE_STATEMENT_CATEGORY = """CREATE TABLE "category" (
+	"Id"	INTEGER,
+	"category"	TEXT,
+	PRIMARY KEY("Id" AUTOINCREMENT)
+)"""
 TABLE_REC = "recipient"
+TABLE_CAT = "category"
 DB_REF = "../notifier.db"

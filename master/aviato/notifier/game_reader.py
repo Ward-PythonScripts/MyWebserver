@@ -11,6 +11,7 @@ Module that will scan the reddit subreddit r/GameDeals and return all the free g
 
 from genericpath import exists
 from logging import exception
+from operator import add
 import pickle
 import praw
 import time
@@ -18,6 +19,8 @@ import os
 import sys
 import re
 
+
+from . import notifier_backend
 from . import credentials
 from . import gamedeal_mailer
 from .containers import freeGame
@@ -126,13 +129,21 @@ def sendGames(freeGames):
     except Exception as e:
         print(str(e))
 
-
+def send_categories_to_db(freeGames:list[freeGame]):
+    try:
+        cats = []
+        for game in freeGames:
+            cats.append([str(game.cat).lower()])
+        notifier_backend.add_categories_if_not_exists(cats=cats)
+    except Exception as e:
+        print(str(e))
 
 
 def main():
     print("Starting gamedeals checker")
     #changeStdOut()
     freeGames = getFromReddit()
+    send_categories_to_db(freeGames)
     sendGames(freeGames)
     print("gamedeals checker shutting down")
     return
