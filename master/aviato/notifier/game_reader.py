@@ -20,16 +20,13 @@ import re
 
 from . import credentials
 from . import gamedeal_mailer
+from .containers import freeGame
 
 UTC_PICKLE_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'gameDealsFiles','utc.pk'))
 STDERR_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'gameDealsFiles','stderror.log'))
 
 
-class freeGame:
-    def __init__(self, category, title, redditLink):
-        self.cat = category
-        self.title = title
-        self.reddit = redditLink
+
 
 def changeStdOut():
     sys.stderr = open(STDERR_PATH,'w+')

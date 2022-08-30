@@ -1,12 +1,7 @@
 import sqlite3
 import json
 
-class Recipient():
-    def __init__(self,id,name,mail,preference) -> None:
-        self.id = id
-        self.name = name
-        self.mail = mail
-        self.preference = preference
+from .containers import Recipient
     
 
 

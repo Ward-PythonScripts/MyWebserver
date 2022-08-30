@@ -6,6 +6,7 @@ import ssl
 from . import credentials
 #credentials is just a py module that returns the needed strings like mail-address and password
 from . import notifier_backend
+from .containers import Recipient,freeGame
 
 SORT_ORDER = {"STEAM":0,"EPIC GAMES":1,"EPIC":2}
 
@@ -15,12 +16,8 @@ class GameDealMailSender:
     def __init__(self) -> None:
         self.email = credentials.gameDeals_mail()
         self.email_password = credentials.gameDeals_app_password()
-        mail_recipients = notifier_backend.get_all_recipients()
-        self.mails = []
-        for recipient in mail_recipients:
-            self.mails.append(recipient.mail)
-        self.mail_subject = "GameDeals - Hello there, some new deals"
-        self.gamedeals = []
+        self.mail_recipients:list[Recipient] = notifier_backend.get_all_recipients()
+        self.gamedeals:list[freeGame] = []
         
     def add_new_deal(self,gamedeal):
         self.gamedeals.append(gamedeal)
@@ -30,11 +27,13 @@ class GameDealMailSender:
         try:
             sorted_games = sorted(self.gamedeals,key=lambda x: (SORT_ORDER.get(str(x.cat).upper(),len(SORT_ORDER)),x.cat),reverse=False)
             
-            for mail_rec in self.mails:
+            for recipient in self.mail_recipients:
+                mail_rec = recipient.mail
                 #build mail body
                 prevCat = ""
                 body = ""
                 for sorted_game in sorted_games:
+                    
                     if prevCat != sorted_game.cat:
                         #new category
                         body += "\n" + sorted_game.cat + "\n\n"
