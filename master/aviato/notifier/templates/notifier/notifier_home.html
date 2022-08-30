@@ -100,6 +100,8 @@ might be good coding practice ?? who knows... probably because of the browser ca
         const all_categories = {{categories|safe}};
         inject_specific(all_categories,exceptions,"exception-specific");
         tick_allowed(allowed);
+        //store correct recipient id in the html for later use
+        document.getElementById("preferences-id-hidden").value = target_id;
     }
 
     function tick_allowed(allowed){
@@ -116,13 +118,11 @@ might be good coding practice ?? who knows... probably because of the browser ca
     }
 
     function inject_specific(categories,fields_to_be_ticked,target_id){
-        if(!(typeof categories === 'string')) {
-            //won't be all or none so need to inject the specific options
-            var specific_div = document.getElementById(target_id);
-            for(let i = 0;i < categories.length;i ++){
-                specific_div.appendChild(create_checkbox_field(categories[i],category_needs_to_be_ticked(categories[i],fields_to_be_ticked)));
-            }
+        var specific_div = document.getElementById(target_id);
+        for(let i = 0;i < categories.length;i ++){
+            specific_div.appendChild(create_checkbox_field(categories[i],category_needs_to_be_ticked(categories[i],fields_to_be_ticked)));
         }
+        
     }
 
     function category_needs_to_be_ticked(categorie,fields_to_be_ticked){
@@ -213,19 +213,20 @@ might be good coding practice ?? who knows... probably because of the browser ca
         <form method="post">
             <div style="display:flex;justify-content:space-around">
                 {%csrf_token%}
+                <input type="hidden" id="preferences-id-hidden" name="id" value="hopefully_not_this_anymore">
                 <div>
                     <h3>Allowed</h3>
                     <div class="pref-block" id="allowed">
                         <div id="allowed-all">
                             <label for="allowed-all-cb">All</label>
-                            <input type="checkbox" id="allowed-all-cb">
+                            <input type="checkbox" id="allowed-all-cb" name="all">
                             <script>
                                 document.getElementById("allowed-all-cb").addEventListener('change',(e) => update_preferences(e.target));
                             </script>
                         </div>
                         <div id="allowed-none">
                             <label for="allowed-none-cb">None</label>
-                            <input type="checkbox" id="allowed-none-cb">
+                            <input type="checkbox" id="allowed-none-cb" name="none">
                             <script>
                                 document.getElementById("allowed-none-cb").addEventListener('change',(e) => update_preferences(e.target));
                             </script>

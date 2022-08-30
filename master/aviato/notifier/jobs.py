@@ -1,6 +1,6 @@
 from . import game_reader
 
-from schedule import Scheduler
+from schedule import Scheduler,CancelJob
 import threading
 import time
 #method below from stack overflow: https://stackoverflow.com/questions/44896618/django-run-a-function-every-x-seconds
@@ -41,6 +41,17 @@ Scheduler.run_continuously = run_continuously
 
 def start_scheduler():
     scheduler = Scheduler()
-    #scheduler.every(10).seconds.do(game_reader.main)
-    game_reader.main()
     scheduler.run_continuously()
+    scheduler.every(4).hours.do(game_reader.main)
+    start_one_time_job(scheduler,game_reader.main)
+    
+
+
+#one time job is basically just so that a task can be start right after boot as well
+def start_one_time_job(scheduler:Scheduler,function):
+    scheduler.every(10).seconds.do(self_destroying_call,function=function)
+    
+
+def self_destroying_call(function):
+    function()
+    return CancelJob

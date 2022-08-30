@@ -64,7 +64,7 @@ def loadUTC():
 
 def getFromReddit():
     freeGames = []
-    lastCheckTime = 0#loadUTC()
+    lastCheckTime = loadUTC()
     if lastCheckTime == -1:
         #first time checking, we could check every game or we could just stop
         exit(99999)
@@ -120,7 +120,6 @@ def containsException(target):
         return False
 
 def sendGames(freeGames):
-    print("Going to sort the games")
     try:
         mailer = gamedeal_mailer.GameDealMailSender()
         for free_game in freeGames:
@@ -141,7 +140,7 @@ def send_categories_to_db(freeGames:list[freeGame]):
 
 def main():
     print("Starting gamedeals checker")
-    #changeStdOut()
+    changeStdOut()
     freeGames = getFromReddit()
     send_categories_to_db(freeGames)
     sendGames(freeGames)

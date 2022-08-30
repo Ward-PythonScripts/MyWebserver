@@ -16,11 +16,3 @@ found links:
 ALS GE NAAR PRODUCTIE WILT GAAN MOET GE NOG STATIC_ROOT INSTELLEN
 just take a look at the correct answer: https://stackoverflow.com/questions/13446325/why-is-my-static-css-not-working-in-django
 or at the documentation: https://docs.djangoproject.com/en/dev/howto/static-files/#serving-static-files-in-development
-
-
-
-__________________________________________________
-STUFF TO TURN BACK ON
-jobs.py, is not scheduled to be repeated anymore, is only going once
-game_reader.py:67 make it loadUTC again
-gamedeal_mailer.py -> turn on the sending of the e-mail again

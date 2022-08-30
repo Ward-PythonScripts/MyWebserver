@@ -33,8 +33,10 @@ class GameDealMailSender:
                 #build mail body
                 prevCat = ""
                 body = ""
+                there_was_an_interesting_category = False
                 for sorted_game in sorted_games:
                     if check_if_cat_is_wanted(recipient=recipient,game=sorted_game):
+                        there_was_an_interesting_category = True
                         if prevCat != sorted_game.cat:
                             #new category
                             body += "\n" + sorted_game.cat + "\n\n"
@@ -42,19 +44,21 @@ class GameDealMailSender:
                         body += sorted_game.title + "\n"
                         body += "https://www.reddit.com"+ sorted_game.reddit + "\n"
                 
-                #build the email
-                em = EmailMessage()
-                em['From'] = self.email
-                em['To'] = mail_rec
-                em['Subject'] = "Gamedeals - New Games"
-                em.set_content(body)
+                if there_was_an_interesting_category:
+                    #only send mail when there was something usefull for this person, 
+                    #build the email
+                    em = EmailMessage()
+                    em['From'] = self.email
+                    em['To'] = mail_rec
+                    em['Subject'] = "Gamedeals - New Games"
+                    em.set_content(body)
 
-                context = ssl.create_default_context()
+                    context = ssl.create_default_context()
 
-                with smtplib.SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
-                    smtp.login(self.email,self.email_password)
-                    #smtp.sendmail(self.email,mail_rec,em.as_string())
-                    smtp.close()
+                    with smtplib.SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
+                        smtp.login(self.email,self.email_password)
+                        smtp.sendmail(self.email,mail_rec,em.as_string())
+                        smtp.close()
 
 
 
@@ -68,30 +72,13 @@ def check_if_cat_is_wanted(recipient:Recipient,game:freeGame):
     try:
         cat_json = json.loads(recipient.preference)
         allowed = cat_json['allowed']
-        denied = cat_json['denied']
-        if allowed == 'none':
-            return False
-        if allowed == 'all':
-            #check if there is some stuff denied
-            if isinstance(denied,str):
-                #will either be all or none
-                if denied == 'all':
-                    return False
-                else:
-                    return True
-            else:
-                #is list with all the denied mail_adresses
-                for denied_cat in denied:
-                    if game.cat == denied_cat:
-                        return False
-                #cat wasn't in the list of denied addresses
-                return True
-        else:
-            #client has given specific list of allowed websites
-            for allowed_cat in allowed:
-                if game.cat == allowed_cat:
-                    return True
-            #category wasn't one that was allowed
-            return False
+        recipient_exceptions = cat_json['exceptions']
+        wants_all_mails = (allowed == 'all')
+        for recipient_exception in recipient_exceptions:
+            if recipient_exception == game.cat:
+                #it is an exception so opposite of what the default settings is 
+                return not wants_all_mails
+        return wants_all_mails
+
     except Exception as e:
         print(str(e))

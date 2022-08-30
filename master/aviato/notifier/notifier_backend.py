@@ -46,6 +46,15 @@ def update_recipient(name,mail,id):
     cursor.close()
     conn.close()
 
+def update_preferences(string_json,id):
+    conn = sqlite3.connect(DB_REF)
+    update_statement = "UPDATE " + TABLE_REC + " SET preference = ? Where Id = ?"
+    cursor = conn.cursor()
+    cursor.execute(update_statement,[string_json,id])
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 def add_categories_if_not_exists(cats):
     conn = sqlite3.connect(DB_REF)
     #is defined in the category table that we want to have only unique categories
@@ -73,7 +82,7 @@ CREATE_STATEMENT_RECIPIENT = """CREATE TABLE "recipient" (
 	"Id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL,
 	"mail"	TEXT NOT NULL,
-	"preference"	TEXT NOT NULL DEFAULT '{"allowed":"all","exceptions":"none"}',
+	"preference"	TEXT NOT NULL DEFAULT '{"allowed":"all","exceptions":[]}',
 	PRIMARY KEY("Id" AUTOINCREMENT)
 )"""
 CREATE_STATEMENT_CATEGORY = """CREATE TABLE "category" (
