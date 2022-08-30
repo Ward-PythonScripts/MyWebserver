@@ -1,0 +1,26 @@
+https://www.youtube.com/watch?v=YnrgBeIRtvo&t
+
+commands:that worked
+
+gunicorn -c conf/gunicorn_config.py aviato.wsgi   
+
+dat zou toch al wat moeten opstarten, maar dan kunt ge nog niet aan u static files aan
+
+sudo service nginx start
+dan moet ge de static file referencen in de settings.py bij static_url
+
+en dan nog iets in nginx:
+sudo nano /etc/nginx/sites-available/aviato
+daarin het volgende:
+server{
+	listen 80;
+	server_name 192.168.4.1;
+
+location /static/{
+	root /share/public_files/executables/aviato_master/aviato/static/;
+}
+
+location / {
+	proxy_pass http://192.168.4.1:8000;
+	}
+}

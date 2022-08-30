@@ -1,0 +1,21 @@
+Django==4.1
+google-api-python-client==2.57.0
+google-auth-httplib2==0.1.0 
+google-auth-oauthlib==0.5.2 
+IMAPClient==2.3.1
+matplotlib==3.5.3
+numpy==1.23.1
+praw==7.6.0
+schedule==1.1.0
+
+#You will still need to get some permissions for the files that the program will write to:
+#giving permission is done as follows: sudo chmod -R 777 gameDealsFiles/  
+#the -R stands for recursive -> the files and folders in the folder as well
+#the 777 means everyone can acces
+#you can define a folder or a file as the last argument
+#files to configure: in root: notifier.db,karting.db
+#                    -R notifier/gameDealsFiles 
+
+
+#in order not to mess up references, launch the application in the directory where you can just type
+#python manage.py runserver 0.0.0.0:8000
