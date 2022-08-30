@@ -37,7 +37,8 @@ def index(request):
 
     #get the recipients from the database
     recipients = notifier_backend.get_all_recipients()
-    categories = notifier_backend.get_categories()
+    categories:list = notifier_backend.get_categories()
+    categories.sort(key=lambda x: str(x),reverse=False)
     context = {
         'recipients': recipients,
         'categories':categories

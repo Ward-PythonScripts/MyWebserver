@@ -73,7 +73,7 @@ CREATE_STATEMENT_RECIPIENT = """CREATE TABLE "recipient" (
 	"Id"	INTEGER NOT NULL,
 	"name"	TEXT NOT NULL,
 	"mail"	TEXT NOT NULL,
-	"preference"	TEXT NOT NULL DEFAULT '{"allowed":"all","denied":"none"}',
+	"preference"	TEXT NOT NULL DEFAULT '{"allowed":"all","exceptions":"none"}',
 	PRIMARY KEY("Id" AUTOINCREMENT)
 )"""
 CREATE_STATEMENT_CATEGORY = """CREATE TABLE "category" (

@@ -87,10 +87,23 @@ might be good coding practice ?? who knows... probably because of the browser ca
         var json_var = document.getElementById("preferences-of-"+String(target_id)).textContent;
         var pref = JSON.parse((json_var));
         var allowed = pref.allowed;
-        var denied = pref.denied;
+        var exceptions = pref.exceptions;
         const all_categories = {{categories|safe}};
-        inject_specific(all_categories,allowed,"allowed-specific");
-        inject_specific(all_categories,denied,"denied-specific");
+        inject_specific(all_categories,exceptions,"exception-specific");
+        tick_allowed(allowed);
+    }
+
+    function tick_allowed(allowed){
+        const allowed_all_cb = document.getElementById("allowed-all-cb");
+        const allowed_none_cb = document.getElementById("allowed-none-cb");
+        if (allowed === "all"){
+            allowed_all_cb.checked = true;
+            allowed_none_cb.checked = false;
+        }
+        else{
+            allowed_all_cb.checked = false;
+            allowed_none_cb.checked = true;
+        }
     }
 
     function inject_specific(categories,fields_to_be_ticked,target_id){
@@ -112,16 +125,15 @@ might be good coding practice ?? who knows... probably because of the browser ca
         return false;
     }
 
-    function create_checkbox_field(denied,to_be_ticked){
-        //will be used for allowed as well, look at denied as just a name to give the parameter
+    function create_checkbox_field(category,to_be_ticked){
         var created_div = document.createElement("div");
-        created_div.setAttribute("id",denied);
+        created_div.setAttribute("id",category);
         var created_label = document.createElement("label");
-        created_label.setAttribute("for",denied+"-cb");
-        created_label.textContent = denied;
+        created_label.setAttribute("for",category+"-cb");
+        created_label.textContent = category;
         var created_cb = document.createElement("input");
         created_cb.setAttribute("type","checkbox");
-        created_cb.setAttribute("id",denied+"-cb");
+        created_cb.setAttribute("id",category+"-cb");
         created_cb.checked = to_be_ticked;
         created_div.appendChild(created_label);
         created_div.appendChild(created_cb);
@@ -180,7 +192,11 @@ might be good coding practice ?? who knows... probably because of the browser ca
             document.getElementById("pref-close").addEventListener('click',
             function() {
                 document.getElementById("pref-window").style.display = 'none';
+                clear_inflated_elements();
             });
+            function clear_inflated_elements(){
+                document.getElementById("exception-specific").innerHTML = '';
+            }
         </script>
         <h3>Here you can change the recipient's preferences</h3>
         <div style="display:flex;justify-content:space-around">
@@ -191,19 +207,16 @@ might be good coding practice ?? who knows... probably because of the browser ca
                         <label for="allowed-all-cb">All</label>
                         <input type="checkbox" id="allowed-all-cb">
                     </div>
-                    <div id="allowed-specific">
-                        <!-- will be injected from js-->
+                    <div id="allowed-none">
+                        <label for="allowed-none-cb">None</label>
+                        <input type="checkbox" id="allowed-none-cb">
                     </div>
                 </div>
             </div>
             <div>
-                <h3>Denied</h3>
-                <div class="pref-block" id="denied">
-                    <div id="denied-all">
-                        <label for="denied-all-cb">All</label>
-                        <input type="checkbox" id="denied-all-cb">
-                    </div>
-                    <div id="denied-specific">
+                <h3>Exceptions</h3>
+                <div class="pref-block" id="exception">
+                    <div id="exception-specific">
                         <!-- will be injected from js-->
                     </div>
                 </div>
