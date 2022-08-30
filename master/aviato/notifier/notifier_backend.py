@@ -47,7 +47,6 @@ def update_recipient(name,mail,id):
     conn.close()
 
 def add_categories_if_not_exists(cats):
-    print(cats)
     conn = sqlite3.connect(DB_REF)
     #is defined in the category table that we want to have only unique categories
     insert_statement = "INSERT OR IGNORE INTO " + TABLE_CAT + " (category) VALUES (?);"
@@ -60,10 +59,9 @@ def add_categories_if_not_exists(cats):
 def get_categories():
     conn = sqlite3.connect(DB_REF)
     categories = []
-    results = conn.execute("Select * from " + TABLE_REC).fetchall()
+    results = conn.execute("Select * from " + TABLE_CAT).fetchall()
     for row in results:
         cat = row[1]
-
         categories.append(cat)
     conn.close()
     return categories

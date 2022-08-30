@@ -88,21 +88,31 @@ might be good coding practice ?? who knows... probably because of the browser ca
         var pref = JSON.parse((json_var));
         var allowed = pref.allowed;
         var denied = pref.denied;
-        inject_specific(allowed,"allowed-specific");
-        inject_specific(denied,"denied-specific");
+        const all_categories = {{categories|safe}};
+        inject_specific(all_categories,allowed,"allowed-specific");
+        inject_specific(all_categories,denied,"denied-specific");
     }
-    function inject_specific(content,target_id){
-        console.log(content,target_id);
-        if(!(typeof content === 'string')) {
+
+    function inject_specific(categories,fields_to_be_ticked,target_id){
+        if(!(typeof categories === 'string')) {
             //won't be all or none so need to inject the specific options
             var specific_div = document.getElementById(target_id);
-            for(let i = 0;i < content.length;i ++){
-                specific_div.appendChild(create_checkbox_field(content[i]));
+            for(let i = 0;i < categories.length;i ++){
+                specific_div.appendChild(create_checkbox_field(categories[i],category_needs_to_be_ticked(categories[i],fields_to_be_ticked)));
             }
         }
     }
 
-    function create_checkbox_field(denied){
+    function category_needs_to_be_ticked(categorie,fields_to_be_ticked){
+        for(let i = 0;i < fields_to_be_ticked.length;i ++){
+            if(categorie === fields_to_be_ticked[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function create_checkbox_field(denied,to_be_ticked){
         //will be used for allowed as well, look at denied as just a name to give the parameter
         var created_div = document.createElement("div");
         created_div.setAttribute("id",denied);
@@ -112,6 +122,7 @@ might be good coding practice ?? who knows... probably because of the browser ca
         var created_cb = document.createElement("input");
         created_cb.setAttribute("type","checkbox");
         created_cb.setAttribute("id",denied+"-cb");
+        created_cb.checked = to_be_ticked;
         created_div.appendChild(created_label);
         created_div.appendChild(created_cb);
         return created_div;
@@ -180,10 +191,6 @@ might be good coding practice ?? who knows... probably because of the browser ca
                         <label for="allowed-all-cb">All</label>
                         <input type="checkbox" id="allowed-all-cb">
                     </div>
-                    <div id="allowed-none">
-                        <label for="allowed-none-cb">None</label>
-                        <input type="checkbox" id="allowed-none-cb">
-                    </div>
                     <div id="allowed-specific">
                         <!-- will be injected from js-->
                     </div>
@@ -195,10 +202,6 @@ might be good coding practice ?? who knows... probably because of the browser ca
                     <div id="denied-all">
                         <label for="denied-all-cb">All</label>
                         <input type="checkbox" id="denied-all-cb">
-                    </div>
-                    <div id="denied-none">
-                        <label for="allowed-none-cb">None</label>
-                        <input type="checkbox" id="denied-none-cb">
                     </div>
                     <div id="denied-specific">
                         <!-- will be injected from js-->

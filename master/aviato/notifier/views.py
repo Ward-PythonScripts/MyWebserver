@@ -1,5 +1,6 @@
 #https://realpython.com/django-social-post-3/ <-- hopefully how to post in django
 
+from calendar import c
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
@@ -36,8 +37,10 @@ def index(request):
 
     #get the recipients from the database
     recipients = notifier_backend.get_all_recipients()
+    categories = notifier_backend.get_categories()
     context = {
-        'recipients': recipients
+        'recipients': recipients,
+        'categories':categories
     }
     template = loader.get_template('notifier/notifier_home.html')
     return HttpResponse(template.render(context,request))
