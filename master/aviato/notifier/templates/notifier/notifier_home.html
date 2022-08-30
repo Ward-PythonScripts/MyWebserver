@@ -81,6 +81,15 @@ might be good coding practice ?? who knows... probably because of the browser ca
         }
 
     }
+    function update_preferences(caller_btn){
+        console.log(caller_btn);
+        if(caller_btn.id === "allowed-all-cb"){
+            document.getElementById("allowed-none-cb").checked = !caller_btn.checked;
+        }
+        else{
+            document.getElementById("allowed-all-cb").checked = !caller_btn.checked;
+        }
+    }
 
     function pref_callback(target_id){
         document.getElementById('pref-window').style.display = 'flex';
@@ -133,6 +142,7 @@ might be good coding practice ?? who knows... probably because of the browser ca
         created_label.textContent = category;
         var created_cb = document.createElement("input");
         created_cb.setAttribute("type","checkbox");
+        created_cb.setAttribute('name',category);
         created_cb.setAttribute("id",category+"-cb");
         created_cb.checked = to_be_ticked;
         created_div.appendChild(created_label);
@@ -199,27 +209,38 @@ might be good coding practice ?? who knows... probably because of the browser ca
             }
         </script>
         <h3>Here you can change the recipient's preferences</h3>
-        <div style="display:flex;justify-content:space-around">
-            <div>
-                <h3>Allowed</h3>
-                <div class="pref-block" id="allowed">
-                    <div id="allowed-all">
-                        <label for="allowed-all-cb">All</label>
-                        <input type="checkbox" id="allowed-all-cb">
+        
+        <form method="post">
+            <div style="display:flex;justify-content:space-around">
+                {%csrf_token%}
+                <div>
+                    <h3>Allowed</h3>
+                    <div class="pref-block" id="allowed">
+                        <div id="allowed-all">
+                            <label for="allowed-all-cb">All</label>
+                            <input type="checkbox" id="allowed-all-cb">
+                            <script>
+                                document.getElementById("allowed-all-cb").addEventListener('change',(e) => update_preferences(e.target));
+                            </script>
+                        </div>
+                        <div id="allowed-none">
+                            <label for="allowed-none-cb">None</label>
+                            <input type="checkbox" id="allowed-none-cb">
+                            <script>
+                                document.getElementById("allowed-none-cb").addEventListener('change',(e) => update_preferences(e.target));
+                            </script>
+                        </div>
                     </div>
-                    <div id="allowed-none">
-                        <label for="allowed-none-cb">None</label>
-                        <input type="checkbox" id="allowed-none-cb">
+                </div>
+                <div>
+                    <h3>Exceptions</h3>
+                    <div class="pref-block" id="exception">
+                        <div id="exception-specific">
+                            <!-- will be injected from js-->
+                        </div>
                     </div>
                 </div>
             </div>
-            <div>
-                <h3>Exceptions</h3>
-                <div class="pref-block" id="exception">
-                    <div id="exception-specific">
-                        <!-- will be injected from js-->
-                    </div>
-                </div>
-            </div>
-        </div>
+            <input type="submit">
+        </form>
 {% endblock %}
