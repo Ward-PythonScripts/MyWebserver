@@ -13,7 +13,7 @@ schedule==1.1.0
 #the -R stands for recursive -> the files and folders in the folder as well
 #the 777 means everyone can acces
 #you can define a folder or a file as the last argument
-#files to configure: in root: notifier.db,karting.db
+#files to configure: in root: notifier.db,karting.db and the folder in which the .db files reside must be given 777 as well
 #                    -R notifier/gameDealsFiles 
 
 

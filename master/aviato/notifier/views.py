@@ -20,13 +20,6 @@ def index(request):
                     if not check_if_preference_change_post(data):
                         print("Tried to post something but couldn't figure out what it was")
 
-        
-
-                
-
-                    
-            
-
     #get the recipients from the database
     recipients = notifier_backend.get_all_recipients()
     categories:list = notifier_backend.get_categories()
