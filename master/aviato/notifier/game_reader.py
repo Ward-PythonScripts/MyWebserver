@@ -17,7 +17,7 @@ import praw
 import time
 import os
 import sys
-import re
+import traceback
 
 
 from . import notifier_backend
@@ -63,39 +63,43 @@ def loadUTC():
 
 
 def getFromReddit():
-    freeGames = []
-    lastCheckTime = loadUTC()
-    if lastCheckTime == -1:
-        #first time checking, we could check every game or we could just stop
-        exit(99999)
-    wereChanges = False
-    reddit = praw.Reddit(client_id=credentials.reddit_client_id(), client_secret=credentials.reddit_client_secret(),
-                         user_agent=credentials.reddit_user_agent())
-    reddit.read_only = True
-    for submissions in reddit.subreddit("GameDeals").new(limit=100):
-        if submissions.created_utc > lastCheckTime:
-            # game hasn't been checked before
-            game = checkSubmission(submissions)
-            if game is not None:
-                freeGames.append(game)
-                wereChanges = True
-        else:
-            # checked all new ones
-            if wereChanges:
-                print("Checked all the new ones")
+    try:
+        freeGames = []
+        lastCheckTime = loadUTC()
+        if lastCheckTime == -1:
+            #first time checking, we could check every game or we could just stop
+            exit(99999)
+        wereChanges = False
+        reddit = praw.Reddit(client_id=credentials.reddit_client_id(), client_secret=credentials.reddit_client_secret(),
+                            user_agent=credentials.reddit_user_agent())
+        reddit.read_only = True
+        for submissions in reddit.subreddit("GameDeals").new(limit=100):
+            if submissions.created_utc > lastCheckTime:
+                # game hasn't been checked before
+                game = checkSubmission(submissions)
+                if game is not None:
+                    freeGames.append(game)
+                    wereChanges = True
             else:
-                print("No new games were found")
-            return freeGames
-    # stopped checking because passed limit
-    print("There were new submissions that haven't been checked yet")
-    return freeGames
+                # checked all new ones
+                if wereChanges:
+                    print("Checked all the new ones")
+                else:
+                    print("No new games were found")
+                return freeGames
+        # stopped checking because passed limit
+        print("There were new submissions that haven't been checked yet")
+        return freeGames
+    except Exception as e:
+        print("Exception caught",traceback.format_exc())
 
 def checkSubmission(submission):
     # get category
     s = str(submission.title)
     s = s.lower()
-    s = s.replace("free demo","")
-    if s.__contains__("Free") or s.__contains__("FREE") or s.__contains__("free") or s.__contains__("100%"):
+    #remove all the falls triggers
+    s = s.replace("free demo","").replace("free weekend","").replace("free until","")
+    if s.__contains__("free") or s.__contains__("100%"):
         if containsException(s):
             return None
         category = s[s.find("[") + len("["):s.rfind("]")]
@@ -106,9 +110,7 @@ def checkSubmission(submission):
         return None
 
 def containsException(target):
-    if re.search("Free Weekend", target, re.IGNORECASE):
-        # steam free weekend trigger -> not important
-        return True
+    #check if free is used in a different word like freedom
     control = "free"
     match = target.lower().find(control)
     if (match == -1) or (match-1)<0 or (match+len(control))>(len(target)-1):

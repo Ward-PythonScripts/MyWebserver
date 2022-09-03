@@ -40,6 +40,7 @@ Scheduler.run_continuously = run_continuously
 
 
 def start_scheduler():
+    print("Starting scheduler")
     scheduler = Scheduler()
     scheduler.run_continuously()
     scheduler.every(4).hours.do(game_reader.main)

@@ -24,6 +24,7 @@ class GameDealMailSender:
         self.gamedeals.append(gamedeal)
     
     def send_mail(self):
+        print("Sending mail")
         #sort first.
         try:
             sorted_games = sorted(self.gamedeals,key=lambda x: (SORT_ORDER.get(str(x.cat).upper(),len(SORT_ORDER)),x.cat),reverse=False)
