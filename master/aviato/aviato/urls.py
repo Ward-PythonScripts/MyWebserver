@@ -26,6 +26,9 @@ urlpatterns = [
 
 ]
 
+#start all the jobs that need to be running in the background
+from . import jobs
+jobs.start_scheduler()
 
 # #### code that prints the whole stack together with the print statements
 # import sys
