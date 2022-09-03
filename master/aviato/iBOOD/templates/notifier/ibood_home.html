@@ -1,0 +1,247 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+
+    
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/notifier.css'%}"/>
+<title>Notifier</title>
+<!-- for some reason I had to put the block in boxes.css if not it would be overwritten
+and no block would be displayed at all
+might be good coding practice ?? who knows... probably because of the browser cashe that wasn't properly loading-->
+{% endblock %}
+    
+{% block body%}
+<h1 style="font-size: 8rem;text-align: left;color: white;margin-top:0;">Notifier</h1>
+
+<div class="container" style="align-items: flex-start;">
+    <div id="main_flex" class="flex-center flex-column">
+
+        <div id="pack_everything_together">
+            <div class="top_bar">
+                <h1 style="padding-right: 4rem;">E-mail recipients</h1>
+                <button style="align-self:flex-end;" name="add" class="header_button" onclick="add_callback()">
+                    <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
+                </button>
+                <script>
+                    function add_callback(){
+                        document.querySelector('.background-modal').style.display = 'flex';
+                    }
+                </script>
+            </div>
+            <div class="block">
+                {% for recipient in recipients %}
+                <div name="{{recipient.id}}" class="recipient">
+                    <h2 name="nameh2">{{recipient.name}}</h2>
+                    <h2 name="mailh2">{{recipient.mail}}</h2>
+                    <p hidden id="preferences-of-{{recipient.id}}">{{recipient.preference}}</p>
+                    <button class="symbol_button" name="preferences" value="{{recipient.id}}" onclick="pref_callback(this.value)">
+                        <img src="{% static 'sprites/filter.svg' %}"></img>
+                    </button>
+                    <button class="symbol_button" name="edit" value="{{recipient.id}}" onclick="edit_callback(this.value)">
+                        <img src="{% static 'sprites/edit.svg' %}"></img>
+                    </button>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <button class="symbol_button" name="remove" value="{{recipient.id}}">
+                            <img src="{% static 'sprites/delete.svg' %}"></img>
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+        
+        
+    </div>
+</div>
+<script>
+    function edit_callback(target_id){
+        document.querySelector('.background-edit').style.display = 'flex';
+        //change the placeholders in the popup to match the current data of the recipient
+        var target_div = document.querySelector('[name=\''+target_id+'\']');
+        var name = target_div.querySelector('[name="nameh2"]').textContent;
+        var mail = target_div.querySelector('[name="mailh2"]').textContent;
+
+        var children = document.querySelector('.background-edit').querySelector('.edit-content').querySelectorAll('.modal-input');
+        for(var i = 0; i < children.length; i++){
+            var child = children[i];
+            if(child.name == 'name_edit'){
+                child.value = name;
+            }
+            else if(child.name == "mail_edit"){
+                child.value = mail;
+            }
+            else if(child.name == "id"){
+                child.value = target_id;
+            }
+        }
+
+    }
+    function update_preferences(caller_btn){
+        console.log(caller_btn);
+        if(caller_btn.id === "allowed-all-cb"){
+            document.getElementById("allowed-none-cb").checked = !caller_btn.checked;
+        }
+        else{
+            document.getElementById("allowed-all-cb").checked = !caller_btn.checked;
+        }
+    }
+
+    function pref_callback(target_id){
+        document.getElementById('pref-window').style.display = 'flex';
+        var json_var = document.getElementById("preferences-of-"+String(target_id)).textContent;
+        var pref = JSON.parse((json_var));
+        var allowed = pref.allowed;
+        var exceptions = pref.exceptions;
+        const all_categories = {{categories|safe}};
+        inject_specific(all_categories,exceptions,"exception-specific");
+        tick_allowed(allowed);
+        //store correct recipient id in the html for later use
+        document.getElementById("preferences-id-hidden").value = target_id;
+    }
+
+    function tick_allowed(allowed){
+        const allowed_all_cb = document.getElementById("allowed-all-cb");
+        const allowed_none_cb = document.getElementById("allowed-none-cb");
+        if (allowed === "all"){
+            allowed_all_cb.checked = true;
+            allowed_none_cb.checked = false;
+        }
+        else{
+            allowed_all_cb.checked = false;
+            allowed_none_cb.checked = true;
+        }
+    }
+
+    function inject_specific(categories,fields_to_be_ticked,target_id){
+        var specific_div = document.getElementById(target_id);
+        for(let i = 0;i < categories.length;i ++){
+            specific_div.appendChild(create_checkbox_field(categories[i],category_needs_to_be_ticked(categories[i],fields_to_be_ticked)));
+        }
+        
+    }
+
+    function category_needs_to_be_ticked(categorie,fields_to_be_ticked){
+        for(let i = 0;i < fields_to_be_ticked.length;i ++){
+            if(categorie === fields_to_be_ticked[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function create_checkbox_field(category,to_be_ticked){
+        var created_div = document.createElement("div");
+        created_div.setAttribute("id",category);
+        var created_label = document.createElement("label");
+        created_label.setAttribute("for",category+"-cb");
+        created_label.textContent = category;
+        var created_cb = document.createElement("input");
+        created_cb.setAttribute("type","checkbox");
+        created_cb.setAttribute('name',category);
+        created_cb.setAttribute("id",category+"-cb");
+        created_cb.checked = to_be_ticked;
+        created_div.appendChild(created_label);
+        created_div.appendChild(created_cb);
+        return created_div;
+    }
+</script>
+
+{%endblock%}
+
+{%block modal%}
+<!-- Modal Section -->
+<div class="background-modal">
+    <div class="modal-content">
+        <div class="close">+</div>
+        <script>
+            document.querySelector('.close').addEventListener('click',
+            function() {
+                document.querySelector('.background-modal').style.display = 'none';
+            });
+        </script>
+        <h3>Enter the new e-mail recipients data</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input class="modal-input" type="text" name="name" placeholder="Name" required>
+            <input class="modal-input" type="text" name="mail" placeholder="e-mail adress" required>
+            <input type="submit">
+        </form>
+    </div>
+</div>
+
+<div class="background-edit">
+    <div class="edit-content">
+        <div class="close">+</div>
+        <script>
+            document.querySelector('.background-edit').querySelector('.close').addEventListener('click',
+            function() {
+                console.log("clicked");
+                document.querySelector('.background-edit').style.display = 'none';
+            });
+        </script>
+        <h3>Here you can edit the recipient's data</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input class="modal-input" type="text" name="name_edit" value="Name" required>
+            <input class="modal-input" type="text" name="mail_edit" value="e-mail adress" required>
+            <input class="modal-input" type="hidden" name="id" value="hopefully_not_this_anymore">
+            <input type="submit">
+        </form>
+    </div>
+</div>
+
+<div class="background-modal" id="pref-window">
+    <div class="modal-content">
+        <div class="close" id="pref-close">+</div>
+        <script>
+            document.getElementById("pref-close").addEventListener('click',
+            function() {
+                document.getElementById("pref-window").style.display = 'none';
+                clear_inflated_elements();
+            });
+            function clear_inflated_elements(){
+                document.getElementById("exception-specific").innerHTML = '';
+            }
+        </script>
+        <h3>Here you can change the recipient's preferences</h3>
+        
+        <form method="post">
+            <div style="display:flex;justify-content:space-around">
+                {%csrf_token%}
+                <input type="hidden" id="preferences-id-hidden" name="id" value="hopefully_not_this_anymore">
+                <div>
+                    <h3>Allowed</h3>
+                    <div class="pref-block" id="allowed">
+                        <div id="allowed-all">
+                            <label for="allowed-all-cb">All</label>
+                            <input type="checkbox" id="allowed-all-cb" name="all">
+                            <script>
+                                document.getElementById("allowed-all-cb").addEventListener('change',(e) => update_preferences(e.target));
+                            </script>
+                        </div>
+                        <div id="allowed-none">
+                            <label for="allowed-none-cb">None</label>
+                            <input type="checkbox" id="allowed-none-cb" name="none">
+                            <script>
+                                document.getElementById("allowed-none-cb").addEventListener('change',(e) => update_preferences(e.target));
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Exceptions</h3>
+                    <div class="pref-block" id="exception">
+                        <div id="exception-specific">
+                            <!-- will be injected from js-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="submit">
+        </form>
+{% endblock %}
