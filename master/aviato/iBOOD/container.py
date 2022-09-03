@@ -53,3 +53,9 @@ class IboodDeal():
         except Exception as e:
             #not supposed to happen
             print(traceback.print_exc(),"got this far",price_string)
+
+class Recipient():
+    def __init__(self,id,name,mail) -> None:
+        self.id = id
+        self.name = name
+        self.mail = mail
