@@ -1,3 +1,4 @@
+from itertools import product
 import requests
 from bs4 import BeautifulSoup
 import traceback
@@ -38,34 +39,88 @@ def collect_deals():
                     product_discount_percentage,product_image_url,product_image,product_link,is_soldout))
 
                 
-                
+            return products_list
                 
         except Exception as e:
             print(traceback.format_exc())
 
 def filter_deals(deals:list[IboodDeal],filter):
-    #product name filters
+    #product name filters, english bad so instead of higher/lower -> bigger/smaller my bad ;)
     if 'name-contains' in filter:
         name_contains = filter.get('name-contains')
+        new_deals = []
         for deal in deals:
-            if deal.product_name.__contains__(name_contains):
-                deals.remove(deal)
+            if deal.product_name.lower().__contains__(name_contains):
+                new_deals.append(deal)
+        deals = new_deals
+    if 'not-name-contains' in filter:
+        name_not_contains = filter.get('not-name-contains')
+        new_deals = []
+        for deal in deals:
+            if not deal.product_name.lower().__contains__(name_not_contains):
+                new_deals.append(deal)
+        deals = new_deals
     if 'inches-smaller' in filter:
         inches_smaller = filter.get('inches-smaller')
+        new_deals = []
         for deal in deals:
-            deal.get_inches_from_name()
+            inches = deal.get_inches_from_name()
+            if not inches == -1:
+                #no inches found in the name
+                if inches <= int(inches_smaller):
+                    new_deals.append(deal)
+        deals = new_deals
+    if 'inches-bigger' in filter:
+        inches_bigger = filter.get('inches-bigger')
+        new_deals = []
+        for deal in deals:
+            inches = deal.get_inches_from_name()
+            if not inches == -1:
+                if inches >= int(inches_bigger):
+                    new_deals.append(deal)
+        deals = new_deals
+    if 'discount-bigger' in filter:
+        discount_bigger = filter.get('discount-bigger')
+        new_deals = []
+        for deal in deals:
+            if deal.get_discount_as_numbers() >= discount_bigger:
+                new_deals.append(deal)
+        deals = new_deals
+    if 'price-smaller' in filter:
+        try:
+            price_smaller = filter.get('price-smaller')
+            new_deals = []
+            for deal in deals:
+                if deal.product_curr_price <= float(price_smaller):
+                    new_deals.append(deal)
+            deals = new_deals
+        except Exception as e:
+            print(traceback.print_exc(),"user probably didn't give a proper float value")
+    if 'not-soldout' in filter:
+        new_deals = []
+        for deal in deals:
+            if not deal.is_soldout:
+                new_deals.append(deal)
+        deals = new_deals
 
 
-        
+
+    return deals
 
 
 def start_scraping():
     print("Starting the iBOOD scraper")
     filter = {
         'name-contains':'tv',
+        'not-name-contains':'tv muurbeugel',
         'inches-smaller':'60',
+        'discount-bigger':'41',
+        'price-smaller':'400',
     }
     deals = filter_deals(collect_deals(),filter)
+    print("End result")
+    for deal in deals:
+        print(deal.product_name,deal.product_discount_percentage,deal.product_curr_price)
 
 
 
