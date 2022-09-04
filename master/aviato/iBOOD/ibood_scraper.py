@@ -1,7 +1,9 @@
-from itertools import product
 import requests
 from bs4 import BeautifulSoup
 import traceback
+import json
+
+from . import ibood_db
 
 from .container import IboodDeal
 
@@ -48,6 +50,7 @@ def collect_deals():
             print(traceback.format_exc())
 
 def filter_deals(deals:list[IboodDeal],filter):
+    print("the deals we're starting with",len(deals))
     #product name filters, english bad so instead of higher/lower -> bigger/smaller my bad ;)
     if 'name-contains' in filter:
         name_contains = filter.get('name-contains')
@@ -110,20 +113,40 @@ def filter_deals(deals:list[IboodDeal],filter):
 
     return deals
 
+def remove_empty_from_filter(filter):
+    new_dict = {}
+    for key in filter.keys():
+        if not filter[key] == "":
+            new_dict[key] = filter[key]
+    return new_dict
+
 
 def start_scraping():
     print("Starting the iBOOD scraper")
-    filter = {
-        'name-contains':'tv',
-        'not-name-contains':'tv muurbeugel',
-        'inches-smaller':'60',
-        'discount-bigger':'41',
-        'price-smaller':'400',
-    }
-    deals = filter_deals(collect_deals(),filter)
-    print("End result")
-    for deal in deals:
-        print(deal.product_name,deal.product_discount_percentage,deal.product_curr_price)
+    all_hardware_deals = collect_deals()
+    #for each person filter the deals and add in db if they are relevant
+    recipients = ibood_db.get_all_recipients()
+    for recipient in recipients:
+        for rec_filter in recipient.searches:
+            filter = rec_filter.action
+            filter = json.loads(filter)
+            filter = remove_empty_from_filter(filter)
+            found_deals = filter_deals(all_hardware_deals,filter)
+            if found_deals is not None:
+                for deal in found_deals:
+                    print(deal.product_name)
+    print("iBOOD scraper shutting down")
+    # filter = {
+    #     'name-contains':'tv',
+    #     'not-name-contains':'tv muurbeugel',
+    #     'inches-smaller':'60',
+    #     'discount-bigger':'41',
+    #     'price-smaller':'400',
+    # }
+    # deals = filter_deals(collect_deals(),filter)
+    # print("End result")
+    # for deal in deals:
+    #     print(deal.product_name,deal.product_discount_percentage,deal.product_curr_price)
 
 
 

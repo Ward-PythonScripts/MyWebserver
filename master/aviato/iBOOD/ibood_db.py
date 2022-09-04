@@ -29,7 +29,6 @@ def get_recipient_with_id(id):
     try:
         conn = sqlite3.connect(DB_REF)
 
-        recipients = []
         result = conn.execute("Select * from " + TABLE_REC + " where Id =" + str(id)).fetchone()
         id = result[0]
         name = result[1]
@@ -86,7 +85,6 @@ def get_recipients_searches(recipient_Id):
 
         searches = []
         results = conn.execute("Select * from " + TABLE_SEARCH + " where recipient_Id = "+str(recipient_Id)).fetchall()
-        print("results are",results)
         for row in results:
             id = row[0]
             recipient_Id = row[1]

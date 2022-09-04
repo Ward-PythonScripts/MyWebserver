@@ -12,7 +12,6 @@ def home(request):
 
     if request.method == 'POST':
         data = request.POST
-        print("data is ",data)
         if not check_if_edit_recipient_post(data):
             if not check_if_remove_recipient_post(data):
                 if not check_if_add_recipient_post(data):

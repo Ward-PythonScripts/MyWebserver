@@ -34,7 +34,6 @@ might be good coding practice ?? who knows... probably because of the browser ca
                 <div name="{{recipient.id}}" class="recipient">
                     <h2 name="nameh2">{{recipient.name}}</h2>
                     <h2 name="mailh2">{{recipient.mail}}</h2>
-                    <p hidden id="searches-of-{{recipient.id}}">{{recipient.get_searches_as_json}}</p>
                     <button class="symbol_button" name="preferences" value="{{recipient.id}}" onclick="location.href='/ibood/{{recipient.id}}'">
                         <img src="{% static 'sprites/filter.svg' %}"></img>
                     </button>

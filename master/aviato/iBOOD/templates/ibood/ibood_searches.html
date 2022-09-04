@@ -67,13 +67,14 @@
         document.getElementById("search-name-input").value = name;
         //then set every other field :(
         var filters_div_children = document.querySelectorAll('[id=filter_input]');
-        const possible_filter_list = {{possible_filters|safe}};
+        //const possible_filter_list = {{possible_filters|safe}};
         const curr_search_filters = document.getElementById("action-of-"+String(id)).value;
         const json_filters = JSON.parse(curr_search_filters);
         console.log(json_filters);
         for(var child_index in filters_div_children){
-            child = filters_div_children[child_index];
-            key = child['name'];
+            var child = filters_div_children[child_index];
+            var key = child['name'];
+            console.log(key);
             child.value = json_filters[key];
         }
         
@@ -101,16 +102,22 @@
             })
         </script>
         <h3>edit/add search</h3>
+        <h4>string->use lower case, everything will be converted to lower case when comparing anyways<br>
+            bool->use true or false, nothing else<br>
+            int->use a number, no identifiers or whatever</h4>
         <form method="post" id="edit-search-form">
             {%csrf_token%}
             <input type="hidden" id="recipient-id-input" name="recipientId" value="to_be_changed_when_loading_window">
             <input type="hidden" id='edit-add-identifier' name="type" value="search">
             <input type="hidden" id="search-id-input" name="id" value="new_id"><!--if the search is getting edited, the new_id will be replaced with the actual id-->
-            <input class="modal-input" id="search-name-input" type="text" name="name" placeholder="Name" required>
+            <div style="display:flex;justify-content:center;">
+                <h4>Name:</h4>
+                <input id="search-name-input" type="text" name="name" placeholder="Name" required>
+            </div>
             {% for filter in possible_filters %}
             <div id="filters" style="display:flex;justify-content:space-around;padding: 10px;">
                 <h4>{{filter}}</h4>
-                <input type="text" id="filter_input" value="somevalue" name="{{filter}}" style="padding-top: 0px;padding-bottom: 0px;">
+                <input type="text" id="filter_input" name="{{filter}}" style="padding-top: 0px;padding-bottom: 0px;">
             </div>
             {% endfor %}
             <input type="submit">
