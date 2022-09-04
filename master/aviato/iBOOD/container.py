@@ -1,3 +1,4 @@
+from email.policy import default
 import traceback
 
 
@@ -55,7 +56,18 @@ class IboodDeal():
             print(traceback.print_exc(),"got this far",price_string)
 
 class Recipient():
-    def __init__(self,id,name,mail) -> None:
+    def __init__(self,id,name,mail,searches) -> None:
         self.id = id
         self.name = name
         self.mail = mail
+        self.searches = searches
+
+class Search():
+    def __init__(self,action,name,recipient_Id) -> None:
+        self.action = action
+        self.name = name
+        if recipient_Id is None:
+            self.recipient_Id = -1
+        else:
+            self.recipient_Id = recipient_Id
+

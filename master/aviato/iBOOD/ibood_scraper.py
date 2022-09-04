@@ -5,6 +5,9 @@ import traceback
 
 from .container import IboodDeal
 
+POSSIBLE_FILTERS = ['name-contains','not-name-contains','inches-smaller',
+    'inches-bigger','discount-bigger','price-smaller','not-soldout']
+
 
 def collect_deals():
     url = "https://www.ibood.com/be/nl/flash-sales/00000/23185/de-hardware/"

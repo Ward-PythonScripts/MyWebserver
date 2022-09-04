@@ -4,6 +4,7 @@ from django.template import loader
 from django.shortcuts import redirect
 
 from . import ibood_db
+from .ibood_scraper import POSSIBLE_FILTERS
 
 def home(request):
 
@@ -20,6 +21,7 @@ def home(request):
     recipients = ibood_db.get_all_recipients()
     context = {
         'recipients': recipients,
+        'possible_filters':POSSIBLE_FILTERS,
     }
     template = loader.get_template('ibood/ibood_home.html')
     return HttpResponse(template.render(context,request))

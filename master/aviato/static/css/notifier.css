@@ -111,6 +111,15 @@ label{
   cursor: pointer;
 }
 
+.help{
+  position:absolute;
+  top:5px;
+  left: 14px;
+  font-size: 38px;
+  color: white;
+  cursor: pointer;
+}
+
 /* BUTTONS */
 .symbol_button,.header_button{
   background-color: transparent;

@@ -3,7 +3,7 @@ import sqlite3
 import traceback
 
 
-from .container import Recipient
+from .container import Recipient,Search
 
 
 def get_all_recipients():
@@ -16,7 +16,8 @@ def get_all_recipients():
             id = row[0]
             name = row[1]
             mail = row[2]
-            recipients.append(Recipient(id,name,mail))
+            #get all searches that correspond with this recipient
+            recipients.append(Recipient(id,name,mail,get_recipients_searches(id)))
         conn.close()
         return recipients
     except Exception as e:
@@ -28,7 +29,6 @@ def get_all_recipients():
 def add_recipient(name,mail):
     try:
         conn = sqlite3.connect(DB_REF)
-        conn.set_trace_callback(print)
         create_statement = "INSERT INTO " + TABLE_REC + " (Name,mail) VALUES (?,?)"
         cursor = conn.cursor()
         cursor.execute(create_statement,[name,mail])
@@ -65,6 +65,26 @@ def remove_recipient(id):
     except Exception as e:
         print(str(e))
         conn.close()
+
+def get_recipients_searches(recipient_Id):
+    try:
+        conn = sqlite3.connect(DB_REF)
+
+        searches = []
+        results = conn.execute("Select * from " + TABLE_SEARCH + " where recipient_Id = "+str(recipient_Id)).fetchall()
+        
+        for row in results:
+            id = row[0]
+            recipient_Id = row[1]
+            search_action = row[2]
+            search_name = row[3]
+            searches.append(Search(search_action,search_name,recipient_Id))
+        conn.close()
+        return searches
+    except Exception as e:
+        print(traceback.print_exc())
+        conn.close()
+
 
 def add_search(recipient_Id,search_action,name):
     try:
