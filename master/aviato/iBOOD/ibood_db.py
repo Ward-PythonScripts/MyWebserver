@@ -16,30 +16,19 @@ def get_all_recipients():
             id = row[0]
             name = row[1]
             mail = row[2]
-            preference = row[3]
-            recipients.append(Recipient(id,name,mail,preference))
+            recipients.append(Recipient(id,name,mail))
         conn.close()
         return recipients
     except Exception as e:
         print(traceback.print_exc())
         conn.close()
     
-def remove_recipient(id):
-    try:
-        conn = sqlite3.connect(DB_REF)
-        delete_statement = "delete FROM "+TABLE_REC+" where id=?"
-        cursor = conn.cursor()
-        cursor.execute(delete_statement,(str(id),))
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        print(str(e))
-        conn.close()
+
 
 def add_recipient(name,mail):
     try:
         conn = sqlite3.connect(DB_REF)
+        conn.set_trace_callback(print)
         create_statement = "INSERT INTO " + TABLE_REC + " (Name,mail) VALUES (?,?)"
         cursor = conn.cursor()
         cursor.execute(create_statement,[name,mail])
@@ -64,12 +53,12 @@ def update_recipient(name,mail,id):
         print(str(e))
         conn.close()
 
-def add_search(recipient_Id,search_action):
+def remove_recipient(id):
     try:
         conn = sqlite3.connect(DB_REF)
-        create_statement = "INSERT INTO " + TABLE_SEARCH + " (recipient_Id,search_action) VALUES (?,?)"
+        delete_statement = "delete FROM "+TABLE_REC+" where Id=?"
         cursor = conn.cursor()
-        cursor.execute(create_statement,[recipient_Id,search_action])
+        cursor.execute(delete_statement,[id])
         conn.commit()
         cursor.close()
         conn.close()
@@ -77,18 +66,20 @@ def add_search(recipient_Id,search_action):
         print(str(e))
         conn.close()
 
-def remove_recipient(id):
+def add_search(recipient_Id,search_action,name):
     try:
         conn = sqlite3.connect(DB_REF)
-        delete_statement = "delete FROM "+TABLE_SEARCH+" where id=?"
+        create_statement = "INSERT INTO " + TABLE_SEARCH + " (recipient_Id,search_action,name) VALUES (?,?,?)"
         cursor = conn.cursor()
-        cursor.execute(delete_statement,(str(id),))
+        cursor.execute(create_statement,[recipient_Id,search_action,name])
         conn.commit()
         cursor.close()
         conn.close()
     except Exception as e:
         print(str(e))
         conn.close()
+
+
 
 def update_search(string_json,id):
     try:
@@ -101,6 +92,19 @@ def update_search(string_json,id):
         conn.close()
     except Exception as e:
         print(str(e))
+        conn.close()
+
+def remove_search(id):
+    try:
+        conn = sqlite3.connect(DB_REF)
+        update_statement = "remove from " + TABLE_SEARCH + " where Id = ?"
+        cursor = conn.cursor()
+        cursor.execute(update_statement,[id])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(traceback.print_exc())
         conn.close()
 
 def get_int_from_bool(bool):
@@ -152,7 +156,7 @@ def create_item_and_add_to_history(name,curr_price,advice_price,discount_percent
     #add to history
     add_to_history(item_id,recipient_id)
 
-    
+
 def add_to_history(item_id,recipient_id):
         try:
             conn = sqlite3.connect(DB_REF)
@@ -208,6 +212,7 @@ CREATE_SEARCH_TABLE = """CREATE TABLE "search" (
 	"Id"	INTEGER,
 	"recipient_Id"	INTEGER NOT NULL,
 	"search_action"	TEXT NOT NULL DEFAULT '{}',
+	"search_name"	TEXT UNIQUE,
 	PRIMARY KEY("Id" AUTOINCREMENT)
 )"""
 

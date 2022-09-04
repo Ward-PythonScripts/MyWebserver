@@ -46,7 +46,6 @@ def check_if_remove_recipient_post(data):
     id = data.get('remove')
     if id is not None:
         #a button to remove a recipient was clicked
-        print("They are trying to remove the recipient",id)
         notifier_backend.remove_recipient(id)
         return True
     else:

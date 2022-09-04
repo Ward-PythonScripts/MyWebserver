@@ -46,7 +46,7 @@ def start_scheduler():
     scheduler.run_continuously()
     # scheduler.every(4).hours.do(game_reader.main)
     # start_one_time_job(scheduler,game_reader.main)
-    start_one_time_job(scheduler,ibood_scraper.start_scraping)
+    #start_one_time_job(scheduler,ibood_scraper.start_scraping)
     
 
 
