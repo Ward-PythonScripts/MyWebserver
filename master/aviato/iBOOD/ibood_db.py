@@ -1,6 +1,7 @@
 from imp import SEARCH_ERROR
 import sqlite3
 import traceback
+from unittest import result
 
 
 from .container import Recipient,Search
@@ -24,7 +25,20 @@ def get_all_recipients():
         print(traceback.print_exc())
         conn.close()
     
+def get_recipient_with_id(id):
+    try:
+        conn = sqlite3.connect(DB_REF)
 
+        recipients = []
+        result = conn.execute("Select * from " + TABLE_REC + " where Id =" + str(id)).fetchone()
+        id = result[0]
+        name = result[1]
+        mail = result[2]
+        conn.close()
+        return Recipient(id,name,mail,get_recipients_searches(id))
+    except Exception as e:
+        print(traceback.print_exc())
+        conn.close()
 
 def add_recipient(name,mail):
     try:
@@ -72,13 +86,13 @@ def get_recipients_searches(recipient_Id):
 
         searches = []
         results = conn.execute("Select * from " + TABLE_SEARCH + " where recipient_Id = "+str(recipient_Id)).fetchall()
-        
+        print("results are",results)
         for row in results:
             id = row[0]
             recipient_Id = row[1]
             search_action = row[2]
             search_name = row[3]
-            searches.append(Search(search_action,search_name,recipient_Id))
+            searches.append(Search(search_action,search_name,recipient_Id,search_id=id))
         conn.close()
         return searches
     except Exception as e:
@@ -89,9 +103,11 @@ def get_recipients_searches(recipient_Id):
 def add_search(recipient_Id,search_action,name):
     try:
         conn = sqlite3.connect(DB_REF)
-        create_statement = "INSERT INTO " + TABLE_SEARCH + " (recipient_Id,search_action,name) VALUES (?,?,?)"
+        create_statement = "INSERT INTO " + TABLE_SEARCH + " (recipient_Id,search_action,search_name) VALUES (?,?,?)"
         cursor = conn.cursor()
-        cursor.execute(create_statement,[recipient_Id,search_action,name])
+        cursor.execute(create_statement,[str(recipient_Id),str(search_action),str(name)])
+        #conn.execute("INSERT INTO search (recipient_Id,search_action,search_name) VALUES \
+        #    ("+str(recipient_Id)+","+str(search_action)+","+str(name)+")")
         conn.commit()
         cursor.close()
         conn.close()
@@ -101,12 +117,12 @@ def add_search(recipient_Id,search_action,name):
 
 
 
-def update_search(string_json,id):
+def update_search(string_json,id,name):
     try:
         conn = sqlite3.connect(DB_REF)
-        update_statement = "UPDATE " + TABLE_SEARCH + " SET search_action = ? Where Id = ?"
+        update_statement = "UPDATE " + TABLE_SEARCH + " SET search_action = ? , search_name = ? Where Id = ?"
         cursor = conn.cursor()
-        cursor.execute(update_statement,[string_json,id])
+        cursor.execute(update_statement,[string_json,name,id])
         conn.commit()
         cursor.close()
         conn.close()

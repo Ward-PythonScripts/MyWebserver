@@ -1,0 +1,177 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+   
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/notifier.css'%}"/>
+<title>{{recipient.name}}</title>
+{% endblock %}
+
+{% block body%}
+
+<div class="top_bar">
+    <input type="hidden" id="recipient-id-search-window" value={{recipient.id}}>
+    <h1 style="padding-right: 4rem;">Searches</h1>
+    <button style="align-self:flex-end;" name="add" class="header_button" onclick="add_search_callback()">
+        <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
+    </button>
+    <script>
+        function add_search_callback(){
+            var recipient_id = document.getElementById("recipient-id-search-window").value;
+            //store in the window it has just opened
+            document.getElementById("recipient-id-input").value = recipient_id;
+            document.getElementById('edit-search-window').style.display = 'flex';
+        }
+    </script>
+</div>
+<div id="search-injection-div">  
+    {%for search in recipient.searches%}
+        <div class="recipient">
+            <h4>{{search.name}}</h4>
+            <input type="hidden" value='{{search.action|safe}}' id="action-of-{{search.search_Id}}">
+            <div id="to-inject-{{search.name}}">
+                <!-- inject with js -->
+            </div>
+            <script>
+                const json_var = {{search.action|safe}};
+                keys = Object.keys(json_var);
+                for(var key in keys){
+                    var new_h4 = document.createElement("h4");
+                    new_h4.style = "padding:0;margin:0;";
+                    var cur_key = keys[key];
+                    var value = json_var[cur_key];
+                    new_h4.textContent = String(cur_key+" = " + value);
+                    document.getElementById("to-inject-{{search.name}}").appendChild(new_h4);
+                }
+            </script>
+            <button class="symbol_button" name="{{search.name}}" value="{{search.search_Id}}" onclick="edit_callback(this)">
+                <img src="{% static 'sprites/edit.svg' %}"></img>
+            </button>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button class="symbol_button" name="remove" value="{{recipient.id}}">
+                    <img src="{% static 'sprites/delete.svg' %}"></img>
+                </button>
+            </form>
+        </div>
+    {%endfor%}
+</div>
+<script>
+    function edit_callback(caller_btn){
+        const name = caller_btn.name;
+        const id = caller_btn.value;
+        document.getElementById("edit-search-window").style.display = 'flex';
+        document.getElementById("recipient-id-input").value = {{recipient.id}};
+        document.getElementById("search-id-input").value = id;
+        document.getElementById("search-name-input").value = name;
+        //then set every other field :(
+        var filters_div_children = document.querySelectorAll('[id=filter_input]');
+        const possible_filter_list = {{possible_filters|safe}};
+        const curr_search_filters = document.getElementById("action-of-"+String(id)).value;
+        const json_filters = JSON.parse(curr_search_filters);
+        console.log(json_filters);
+        for(var child_index in filters_div_children){
+            child = filters_div_children[child_index];
+            key = child['name'];
+            child.value = json_filters[key];
+        }
+        
+
+
+    }
+</script>
+{%endblock%}
+
+{% block modal%}
+<div class="background-modal" id="edit-search-window">
+    <div class="modal-content">
+        <div class="close" id="edit-search-close">+</div>
+        <script>
+            document.getElementById("edit-search-close").addEventListener('click',
+            function() {
+                document.getElementById("edit-search-window").style.display = 'none';
+            });
+        </script>
+        <div class="help" id="edit-search-help">?</div>
+        <script>
+            document.getElementById("edit-search-help").addEventListener('click',
+            function(){
+                document.getElementById('help-edit-search-window').style.display = 'flex';
+            })
+        </script>
+        <h3>edit/add search</h3>
+        <form method="post" id="edit-search-form">
+            {%csrf_token%}
+            <input type="hidden" id="recipient-id-input" name="recipientId" value="to_be_changed_when_loading_window">
+            <input type="hidden" id='edit-add-identifier' name="type" value="search">
+            <input type="hidden" id="search-id-input" name="id" value="new_id"><!--if the search is getting edited, the new_id will be replaced with the actual id-->
+            <input class="modal-input" id="search-name-input" type="text" name="name" placeholder="Name" required>
+            {% for filter in possible_filters %}
+            <div id="filters" style="display:flex;justify-content:space-around;padding: 10px;">
+                <h4>{{filter}}</h4>
+                <input type="text" id="filter_input" value="somevalue" name="{{filter}}" style="padding-top: 0px;padding-bottom: 0px;">
+            </div>
+            {% endfor %}
+            <input type="submit">
+        </form>
+        <script>
+            function form_handler(event){
+                event.preventDefault();
+                const data_form = new FormData(event.target);
+                const filters = Object.fromEntries(data_form.entries());
+                //need to remove all the things that aren't filter
+                data = {};
+                data.csrfmiddlewaretoken = filters.csrfmiddlewaretoken;
+                delete filters.csrfmiddlewaretoken;
+                data.id = filters.id;
+                delete filters.id;
+                data.name = filters.name;
+                delete filters.name;
+                data.type = filters.type;
+                delete filters.type;
+                data.recipientId = filters.recipientId;
+                delete filters.recipientId;
+                data.filters = filters;
+
+                //then send our own POST request
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST","");
+                xhr.setRequestHeader("X-CSRFToken",data.csrfmiddlewaretoken);
+                xhr.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+                xhr.send(JSON.stringify(data));
+
+                document.getElementById("edit-search-window").style.display = 'none';
+
+            }
+            const form = document.getElementById('edit-search-form');
+            form.addEventListener("submit",form_handler);
+        </script>
+    </div>
+</div>
+
+<div class="background-modal" id="help-edit-search-window">
+    <div class="modal-content">
+        <div class="close" id="help-edit-search-close">+</div>
+        <script>
+            document.getElementById("help-edit-search-close").addEventListener('click',
+            function() {
+                document.getElementById("help-edit-search-window").style.display = 'none';
+            });
+        </script>
+        <h3>Help for edit/add search</h3>
+        <h4>In this window you can add a new search, in name you type the new name of the search.</h4>
+        <h4>And underneath name, there are all the filters that you can use. 
+            If you want to use them simply check the checkbox or type the value for the keys in the box. 
+            It will automatically detect which filters will be used and which not.
+        </h4>
+        <h4>specific info:<br>
+            name-contains: if you want a tv, type tv<br>
+            not-name-contains: tv brackets exist as well, type tv brackets (website is in dutch though so tv houder would be better)<br>
+            inches-smaller: type the size that you want(only in numeric)<br>
+            inches-bigger: same as smaller, but than for inches-bigger<br>
+            discount-bigger: same, but than for discount (discount is e.g. -70% but you just need to type 70)<br>
+            price-smaller: idem
+        </h4>
+</div>
+{% endblock%}

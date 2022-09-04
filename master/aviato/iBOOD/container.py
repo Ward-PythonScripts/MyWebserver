@@ -1,5 +1,5 @@
-from email.policy import default
 import traceback
+import json
 
 
 class IboodDeal():
@@ -61,13 +61,38 @@ class Recipient():
         self.name = name
         self.mail = mail
         self.searches = searches
+    
+    def get_searches_as_json(self):
+        serialized_list = []
+        for search in self.searches:
+            serialized_list.append(search.to_dict())
+        json_string = json.dumps(serialized_list)
+        return {
+            'list':json_string
+        }
+
+
 
 class Search():
-    def __init__(self,action,name,recipient_Id) -> None:
+    def __init__(self,action,name,recipient_Id,search_id) -> None:
         self.action = action
         self.name = name
+        self.search_Id = search_id
         if recipient_Id is None:
             self.recipient_Id = -1
         else:
             self.recipient_Id = recipient_Id
+    def to_dict(self):
+        return {
+            'action':self.action,
+            'name':self.name,
+            'recipient_Id':self.recipient_Id,
+            'search_Id':self.search_id,
+        }
 
+
+class Filter():
+    def __init__(self,key,value) -> None:
+        self.key = key
+        self.value = value
+    

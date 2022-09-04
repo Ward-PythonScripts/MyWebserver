@@ -34,8 +34,8 @@ might be good coding practice ?? who knows... probably because of the browser ca
                 <div name="{{recipient.id}}" class="recipient">
                     <h2 name="nameh2">{{recipient.name}}</h2>
                     <h2 name="mailh2">{{recipient.mail}}</h2>
-                    <p hidden id="searches-of-{{recipient.id}}">{{recipient.searches}}</p>
-                    <button class="symbol_button" name="preferences" value="{{recipient.id}}" onclick="pref_callback(this.value)">
+                    <p hidden id="searches-of-{{recipient.id}}">{{recipient.get_searches_as_json}}</p>
+                    <button class="symbol_button" name="preferences" value="{{recipient.id}}" onclick="location.href='/ibood/{{recipient.id}}'">
                         <img src="{% static 'sprites/filter.svg' %}"></img>
                     </button>
                     <button class="symbol_button" name="edit" value="{{recipient.id}}" onclick="edit_callback(this.value)">
@@ -91,27 +91,6 @@ might be good coding practice ?? who knows... probably because of the browser ca
         }
     }
 
-    function pref_callback(target_id){
-
-        document.getElementById('search-window').style.display = 'flex';
-        //need to inflate the searches in id = searches-to-inflate
-        var parent_div = document.getElementById("search-injection-div");
-        var json_var = document.getElementById("searches-of-"+String(target_id)).textContent;
-        var searches = JSON.parse((json_var));
-        console.log(searches);
-
-
-        // document.getElementById('pref-window').style.display = 'flex';
-        // var json_var = document.getElementById("preferences-of-"+String(target_id)).textContent;
-        // var pref = JSON.parse((json_var));
-        // var allowed = pref.allowed;
-        // var exceptions = pref.exceptions;
-        // const all_categories = {{categories|safe}};
-        // inject_specific(all_categories,exceptions,"exception-specific");
-        // tick_allowed(allowed);
-        // //store correct recipient id in the html for later use
-        // document.getElementById("preferences-id-hidden").value = target_id;
-    }
 
     function tick_allowed(allowed){
         const allowed_all_cb = document.getElementById("allowed-all-cb");
@@ -213,87 +192,8 @@ might be good coding practice ?? who knows... probably because of the browser ca
     </div>
 </div>
 
-<div class="background-modal" id="search-window">
-    <div class="modal-content">
-        <div class="close" id="search-close">+</div>
-        <script>
-            document.getElementById("search-close").addEventListener('click',
-            function() {
-                document.getElementById("search-window").style.display = 'none';
-            });
-        </script>
-        <div class="top_bar">
-            <h1 style="padding-right: 4rem;">Searches</h1>
-            <button style="align-self:flex-end;" name="add" class="header_button" onclick="add_search_callback()">
-                <img style="background-color: red;" src="{% static 'sprites/add.svg' %}"></img>
-            </button>
-            <script>
-                function add_search_callback(){
-                    document.getElementById('edit-search-window').style.display = 'flex';
-                }
-            </script>
-        </div>
-        <div class="block" id="search-injection-div">
-            <!--to be injected from js-->
-        </div>
-    </div> 
-</div>
 
-<div class="background-modal" id="edit-search-window">
-    <div class="modal-content">
-        <div class="close" id="edit-search-close">+</div>
-        <script>
-            document.getElementById("edit-search-close").addEventListener('click',
-            function() {
-                document.getElementById("edit-search-window").style.display = 'none';
-            });
-        </script>
-        <div class="help" id="edit-search-help">?</div>
-        <script>
-            document.getElementById("edit-search-help").addEventListener('click',
-            function(){
-                document.getElementById('help-edit-search-window').style.display = 'flex';
-            })
-        </script>
-        <h3>edit/add search</h3>
-        <form>
-            {%csrf_token%}
-            <input type="hidden" name="id" value="new_id"><!--if the search is getting edited, the new_id will be replaced with the actual id-->
-            <input class="modal-input" type="text" name="name" placeholder="Name" required>
-            {% for filter in possible_filters %}
-            <div id="filters" style="display:flex;justify-content:space-around;padding: 10px;">
-                <h4>{{filter}}</h4>
-                <input type="text" name="{{filter}}" style="padding-top: 0px;padding-bottom: 0px;">
-            </div>
-            {% endfor %}
-            <input type="submit">
-        </form>
-    </div>
-</div>
 
-<div class="background-modal" id="help-edit-search-window">
-    <div class="modal-content">
-        <div class="close" id="help-edit-search-close">+</div>
-        <script>
-            document.getElementById("help-edit-search-close").addEventListener('click',
-            function() {
-                document.getElementById("help-edit-search-window").style.display = 'none';
-            });
-        </script>
-        <h3>Help for edit/add search</h3>
-        <h4>In this window you can add a new search, in name you type the new name of the search.</h4>
-        <h4>And underneath name, there are all the filters that you can use. 
-            If you want to use them simply check the checkbox or type the value for the keys in the box. 
-            It will automatically detect which filters will be used and which not.
-        </h4>
-        <h4>specific info:<br>
-            name-contains: if you want a tv, type tv<br>
-            not-name-contains: tv brackets exist as well, type tv brackets (website is in dutch though so tv houder would be better)<br>
-            inches-smaller: type the size that you want(only in numeric)<br>
-            inches-bigger: same as smaller, but than for inches-bigger<br>
-            discount-bigger: same, but than for discount (discount is e.g. -70% but you just need to type 70)<br>
-            price-smaller: idem
-        </h4>
-</div>
+
         
 {% endblock %}
