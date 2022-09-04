@@ -33,7 +33,7 @@
                 <!-- inject with js -->
             </div>
             <script>
-                const json_var = {{search.action|safe}};
+                var json_var = {{search.action|safe}};
                 keys = Object.keys(json_var);
                 for(var key in keys){
                     var new_h4 = document.createElement("h4");

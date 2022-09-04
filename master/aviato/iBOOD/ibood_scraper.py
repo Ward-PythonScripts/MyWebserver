@@ -50,7 +50,6 @@ def collect_deals():
             print(traceback.format_exc())
 
 def filter_deals(deals:list[IboodDeal],filter):
-    print("the deals we're starting with",len(deals))
     #product name filters, english bad so instead of higher/lower -> bigger/smaller my bad ;)
     if 'name-contains' in filter:
         name_contains = filter.get('name-contains')
