@@ -130,8 +130,9 @@ def update_search(string_json,id,name):
 
 def remove_search(id):
     try:
+        print("id is ",id)
         conn = sqlite3.connect(DB_REF)
-        update_statement = "remove from " + TABLE_SEARCH + " where Id = ?"
+        update_statement = "delete from " + TABLE_SEARCH + " where Id = ?"
         cursor = conn.cursor()
         cursor.execute(update_statement,[id])
         conn.commit()

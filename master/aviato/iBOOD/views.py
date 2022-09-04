@@ -63,9 +63,10 @@ def check_if_add_recipient_post(data):
 def search(request,id):
     if request.method == 'POST':
         data = request.body.decode("UTF-8")
-        print("data is ",data)
+        post_data = request.POST
         if not check_if_search_change_post(data):
-            print("Tried to post something but couldn't figure out what it was")
+            if not check_if_search_remove_post(post_data):
+                print("Tried to post something but couldn't figure out what it was")
 
 
     recipient = ibood_db.get_recipient_with_id(id)
@@ -77,25 +78,37 @@ def search(request,id):
     return HttpResponse(template.render(context,request))
 
 
+def check_if_search_remove_post(data):
+    if data.get('remove') is not None:
+        id = data.get('remove')
+        ibood_db.remove_search(id)
+        return True
+    return False
+
 
 def check_if_search_change_post(data):
 
     # data = list(data.keys())[0]
-    # print("in func data is ",data)
-    json_data = json.loads(data)
-    if json_data.get('type') == 'search':
-        id = json_data.get('id')
-        if id == 'new_id':
-            #want to add a new search to the db
-            #first check if we have all the correct values
-            name = json_data.get('name')
-            filters = json_data.get('filters')
-            recipient_id = json_data.get('recipientId')
-            ibood_db.add_search(recipient_Id=recipient_id,search_action=json.dumps(filters),name=name)
+    try:
+        if data is not None:
+            json_data = json.loads(data)
+            if json_data.get('type') == 'search':
+                id = json_data.get('id')
+                if id == 'new_id':
+                    #want to add a new search to the db
+                    #first check if we have all the correct values
+                    name = json_data.get('name')
+                    filters = json_data.get('filters')
+                    recipient_id = json_data.get('recipientId')
+                    ibood_db.add_search(recipient_Id=recipient_id,search_action=json.dumps(filters),name=name)
+                else:
+                    filters = json_data.get('filters')
+                    name = json_data.get('name')
+                    ibood_db.update_search(json.dumps(filters),id,name)
+                return True
+            else:
+                return False
         else:
-            filters = json_data.get('filters')
-            name = json_data.get('name')
-            ibood_db.update_search(json.dumps(filters),id,name)
-        return True
-    else:
+            return False
+    except Exception as e:
         return False

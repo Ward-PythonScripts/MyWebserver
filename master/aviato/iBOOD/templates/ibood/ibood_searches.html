@@ -50,7 +50,7 @@
             
             <form method="post">
                 {% csrf_token %}
-                <button class="symbol_button" name="remove" value="{{recipient.id}}">
+                <button class="symbol_button" name="remove" value={{search.search_Id}}>
                     <img src="{% static 'sprites/delete.svg' %}"></img>
                 </button>
             </form>
