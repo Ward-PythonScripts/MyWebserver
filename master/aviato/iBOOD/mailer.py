@@ -20,6 +20,8 @@ class Mailer():
         self.filter_for_already_informed_mails()
         if len(self.deals_to_mail) == 0:
             return
+        else:
+            print("sending new deals ",len(self.deals_to_mail),"in total")
         self.send_mail()
 
     def send_mail(self):
@@ -70,11 +72,11 @@ class Mailer():
     def filter_for_already_informed_mails(self):
         deals = self.deals
         for deal in deals:
-            # if ibood_db.create_item_and_add_to_history(name=deal.product_name,curr_price=deal.product_curr_price,
-            #     advice_price=deal.product_advice_price,discount_percentage=deal.get_discount_as_numbers(),
-            #     image_url=deal.product_image_url,image=deal.product_image,link=deal.product_link,soldout=deal.is_soldout,
-            #     recipient_id=self.recipient.id):
+            if ibood_db.create_item_and_add_to_history(name=deal.product_name,curr_price=deal.product_curr_price,
+                advice_price=deal.product_advice_price,discount_percentage=deal.get_discount_as_numbers(),
+                image_url=deal.product_image_url,image=deal.product_image,link=deal.product_link,soldout=deal.is_soldout,
+                recipient_id=self.recipient.id):
                 #wasn't yet in the history -> add to the mailing list
-            self.deals_to_mail.append(deal)
+                self.deals_to_mail.append(deal)
         
 

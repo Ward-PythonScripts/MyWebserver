@@ -167,7 +167,6 @@ def change_item_soldout_from_name(name,soldout):
         conn.close()
 
 def create_item_and_add_to_history(name,curr_price,advice_price,discount_percentage,image_url,image,link,soldout,recipient_id):
-    print("create item called")
     #initialize
     item_id = -1
     #first check if the item was already created, no need to create anymore otherwise
@@ -235,13 +234,11 @@ def get_id_from_item_name_and_link(name,link):
 
 
 def item_already_present(name,link):
-    print("item_already_present called")
     try:
         conn = sqlite3.connect(DB_REF)
         select_stmt = "Select * from " + TABLE_ITEM+ " where Name = ? and Link = ?"
         cursor = conn.cursor()
         results = cursor.execute(select_stmt,[name,link]).fetchall()
-        print("results is",results)
         if len(results) == 0:
             conn.close()
             return False

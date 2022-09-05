@@ -139,17 +139,5 @@ def start_scraping():
             if found_deals is not None:
                 Mailer(recipient=recipient,deals=found_deals)
     print("iBOOD scraper shutting down")
-    # filter = {
-    #     'name-contains':'tv',
-    #     'not-name-contains':'tv muurbeugel',
-    #     'inches-smaller':'60',
-    #     'discount-bigger':'41',
-    #     'price-smaller':'400',
-    # }
-    # deals = filter_deals(collect_deals(),filter)
-    # print("End result")
-    # for deal in deals:
-    #     print(deal.product_name,deal.product_discount_percentage,deal.product_curr_price)
-
 
 
