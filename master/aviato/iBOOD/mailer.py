@@ -8,6 +8,7 @@ from . import ibood_db
 from . import credentials
 from io import BytesIO
 import ssl
+from PIL import Image
 
 class Mailer():
     def __init__(self,recipient,deals) -> None:
@@ -28,26 +29,41 @@ class Mailer():
         msg['From'] = credentials.gameDeals_mail()
         msg['To'] = self.recipient.mail
 
+        body_text = ""
 
         image_index = 1
         for deal in self.deals_to_mail:
-            # text = MIMEText('<img src="cid:image"'+str(image_index)+'>','html')
-            # msg.attach(text)
-            # image = MIMEImage(BytesIO(deal.product_image))
-            # image.add_header('Content-ID','<image'+str(image_index)+'>')
-            # msg.attach(image)
-            text = MIMEText('<html><body><h1>Hello World</h1></body></html>','html','utf-8')
-            msg.attach(text)
+            image_id = "image"+str(image_index)
+            soldout_string = "not yet soldout"
+            if deal.is_soldout:
+                soldout_string = "SOLDOUT"
+            body_text += '<h1>'+deal.product_name+'</h1><img src="cid:'+image_id+'"><h2>advice price was: '+str(deal.product_advice_price)+' EUR, now available for: '+str(deal.product_curr_price)+' EUR ('+str(deal.product_discount_percentage)+')</h2><a href="'+str(deal.product_link)+'" >Click to go to iDOOB.com <a><br>'+soldout_string+'<br><br><br><br>'
+
+            image_index +=1
+
+        mail_text = MIMEText(body_text,'html')
+        msg.attach(mail_text)
+
+        #add images that have to fill in the mail
+        
+        image_index = 1
+        for deal in self.deals_to_mail:
+            img = Image.open(BytesIO(deal.product_image))
+            #need to do the following so that we can open the image in MIME
+            byte_buffer = BytesIO()
+            img.save(byte_buffer,"PNG")
+            image = MIMEImage(byte_buffer.getvalue())
+            image_id = "image"+str(image_index)
+            image.add_header('Content-ID','<'+image_id+'>')
+            msg.attach(image)
 
             image_index += 1
-
-        print("msg as string",msg.as_string(),"there were ",len(self.deals_to_mail),"deals to mail")
 
         context = ssl.create_default_context()
 
         with smtplib.SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
             smtp.login(credentials.gameDeals_mail(),credentials.gameDeals_app_password())
-            #smtp.sendmail(credentials.gameDeals_mail(),self.recipient.mail,msg.as_string())
+            smtp.sendmail(credentials.gameDeals_mail(),self.recipient.mail,msg.as_string())
             smtp.close()
 
 
