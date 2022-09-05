@@ -1,3 +1,4 @@
+import sched
 from notifier import game_reader
 from iBOOD import ibood_scraper
 
@@ -44,15 +45,16 @@ def start_scheduler():
     print("Starting scheduler")
     scheduler = Scheduler()
     scheduler.run_continuously()
-    # scheduler.every(4).hours.do(game_reader.main)
-    # start_one_time_job(scheduler,game_reader.main)
+    scheduler.every(4).hours.do(game_reader.main)
+    scheduler.every(4).hours.do(ibood_scraper.start_scraping)
+    start_one_time_job(scheduler,game_reader.main)
     start_one_time_job(scheduler,ibood_scraper.start_scraping)
     
 
 
 #one time job is basically just so that a task can be start right after boot as well
 def start_one_time_job(scheduler:Scheduler,function):
-    scheduler.every(5).seconds.do(self_destroying_call,function=function)
+    scheduler.every(10).seconds.do(self_destroying_call,function=function)
     
 
 def self_destroying_call(function):

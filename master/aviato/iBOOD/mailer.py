@@ -2,8 +2,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-from subprocess import CREATE_DEFAULT_ERROR_MODE
-from .container import Recipient,Search,IboodDeal
+from .container import Recipient,IboodDeal
 from . import ibood_db
 from . import credentials
 from io import BytesIO
@@ -15,10 +14,12 @@ class Mailer():
         self.recipient:Recipient = recipient
         self.deals:list[IboodDeal] = deals
         if len(self.deals) == 0:
+            print("not sending any emails for this one")
             return
         self.deals_to_mail:list[IboodDeal] = []
         self.filter_for_already_informed_mails()
         if len(self.deals_to_mail) == 0:
+            print("not sending any emails for this one")
             return
         else:
             print("sending new deals ",len(self.deals_to_mail),"in total")

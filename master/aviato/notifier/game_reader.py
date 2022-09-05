@@ -16,7 +16,6 @@ import pickle
 import praw
 import time
 import os
-import sys
 import traceback
 
 
@@ -29,11 +28,6 @@ UTC_PICKLE_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'gam
 STDERR_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ), 'gameDealsFiles','stderror.log'))
 
 
-
-
-def changeStdOut():
-    sys.stderr = open(STDERR_PATH,'w+')
-    return
 
 def storeUTC(curr_time):
     with open(UTC_PICKLE_PATH, 'wb+') as pick:
@@ -142,7 +136,6 @@ def send_categories_to_db(freeGames:list[freeGame]):
 
 def main():
     print("Starting gamedeals checker")
-    changeStdOut()
     freeGames = getFromReddit()
     send_categories_to_db(freeGames)
     sendGames(freeGames)
