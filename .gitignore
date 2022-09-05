@@ -46,3 +46,4 @@ master/notifier.db
 master/mailing/old_game_deals
 master/mailing/credentials.py
 master/aviato/notifier/gameDealsFiles/utc.pk
+master/aviato/iBOOD/credentials.py

@@ -1,3 +1,4 @@
+from ast import iter_child_nodes
 from imp import SEARCH_ERROR
 import sqlite3
 import traceback
@@ -166,10 +167,12 @@ def change_item_soldout_from_name(name,soldout):
         conn.close()
 
 def create_item_and_add_to_history(name,curr_price,advice_price,discount_percentage,image_url,image,link,soldout,recipient_id):
+    print("create item called")
     #initialize
     item_id = -1
     #first check if the item was already created, no need to create anymore otherwise
     if not item_already_present(name,link):
+        print("going to add a new item")
         soldout_int = get_int_from_bool(soldout)
         try:
             conn = sqlite3.connect(DB_REF)
@@ -188,22 +191,33 @@ def create_item_and_add_to_history(name,curr_price,advice_price,discount_percent
     if item_id == -1:
         item_id = get_id_from_item_name_and_link(name,link)
 
-    #add to history
-    add_to_history(item_id,recipient_id)
+    #add to history if it wasn't yet in the history, if it wasn't return True else return False
+    return add_to_history_if_not_in_yet(item_id,recipient_id)
 
-
-def add_to_history(item_id,recipient_id):
+#add to history if it wasn't yet in the history, if it wasn't return True else return False
+def add_to_history_if_not_in_yet(item_id,recipient_id):
         try:
             conn = sqlite3.connect(DB_REF)
-            create_statement = "INSERT INTO " + TABLE_HISTORY + " (recipient_Id,item_Id) VALUES (?,?)"
+            #first check if in there
+            slct_statement = "Select * from " + TABLE_HISTORY + " where recipient_Id = ? and item_Id = ?"
             cursor = conn.cursor()
-            cursor.execute(create_statement,[recipient_id,item_id])
-            conn.commit()
+            result = cursor.execute(slct_statement,[recipient_id,item_id]).fetchone()
             cursor.close()
-            conn.close()
+            if result is None:
+                #still need to insert it
+                create_statement = "INSERT INTO " + TABLE_HISTORY + " (recipient_Id,item_Id) VALUES (?,?)"
+                cursor = conn.cursor()
+                cursor.execute(create_statement,[recipient_id,item_id])
+                conn.commit()
+                cursor.close()
+                conn.close()
+                return True
+            else:
+                return False
         except Exception as e:
             print(traceback.print_exc())
             conn.close()
+            return False
 
 
 def get_id_from_item_name_and_link(name,link):
@@ -211,30 +225,34 @@ def get_id_from_item_name_and_link(name,link):
         conn = sqlite3.connect(DB_REF)
         create_statement = "Select Id from " + TABLE_ITEM + " where name = ? and link = ?"
         cursor = conn.cursor()
-        result = cursor.execute(create_statement,[name,link]).fetchone()
+        result = cursor.execute(create_statement,[name,link]).fetchone()[0]
         cursor.close()
         conn.close()
-        return int(result[0])
+        return int(result)
     except Exception as e:
         print(traceback.print_exc())
         conn.close()
 
 
 def item_already_present(name,link):
+    print("item_already_present called")
     try:
         conn = sqlite3.connect(DB_REF)
-        select_stmt = "Select * from " + TABLE_REC+ " where Name = ? and Link = ?"
+        select_stmt = "Select * from " + TABLE_ITEM+ " where Name = ? and Link = ?"
         cursor = conn.cursor()
         results = cursor.execute(select_stmt,[name,link]).fetchall()
-        if results is not None:
-            conn.close()
-            return True
-        else:
+        print("results is",results)
+        if len(results) == 0:
             conn.close()
             return False
+        else:
+            conn.close()
+            return True
     except Exception as e:
         print(traceback.print_exc())
-        conn.close()    
+        conn.close()   
+
+     
 
 CREATE_RECIPIENT_TABLE = """CREATE TABLE "recipient" (
 	"Id"	INTEGER NOT NULL,
@@ -267,7 +285,7 @@ CREATE_ITEM_TABLE = """CREATE TABLE "item" (
 CREATE_HISTOREY_TABLE = """CREATE TABLE "history" (
 	"Id"	INTEGER,
 	"recipient_Id"	INTEGER NOT NULL,
-	"item_Id"	INTEGER,
+	"item_Id"	INTEGER NOT NULL,
 	PRIMARY KEY("Id" AUTOINCREMENT)
 )"""
 
