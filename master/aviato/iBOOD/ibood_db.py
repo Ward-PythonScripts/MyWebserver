@@ -105,8 +105,6 @@ def add_search(recipient_Id,search_action,name):
         create_statement = "INSERT INTO " + TABLE_SEARCH + " (recipient_Id,search_action,search_name) VALUES (?,?,?)"
         cursor = conn.cursor()
         cursor.execute(create_statement,[str(recipient_Id),str(search_action),str(name)])
-        #conn.execute("INSERT INTO search (recipient_Id,search_action,search_name) VALUES \
-        #    ("+str(recipient_Id)+","+str(search_action)+","+str(name)+")")
         conn.commit()
         cursor.close()
         conn.close()
@@ -291,4 +289,4 @@ TABLE_ITEM = "item"
 TABLE_SEARCH = "search"
 TABLE_HISTORY = "history"
 
-DB_REF = "../idoob.db"
+DB_REF = "../ibood.db"

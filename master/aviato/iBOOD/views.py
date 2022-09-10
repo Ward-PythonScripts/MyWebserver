@@ -1,3 +1,4 @@
+import traceback
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
@@ -87,8 +88,6 @@ def check_if_search_remove_post(data):
 
 
 def check_if_search_change_post(data):
-
-    # data = list(data.keys())[0]
     try:
         if data is not None:
             json_data = json.loads(data)
@@ -103,6 +102,7 @@ def check_if_search_change_post(data):
                     ibood_db.add_search(recipient_Id=recipient_id,search_action=json.dumps(filters),name=name)
                 else:
                     filters = json_data.get('filters')
+                    filters = get_filters_as_lower_case(filters)
                     name = json_data.get('name')
                     ibood_db.update_search(json.dumps(filters),id,name)
                 return True
@@ -111,4 +111,11 @@ def check_if_search_change_post(data):
         else:
             return False
     except Exception as e:
+        print(traceback.print_exc())
         return False
+
+def get_filters_as_lower_case(filters):
+    #filters could be entered as upper case -> need to parse to lower case before storing
+    for key in filters.keys():
+        filters[key] = filters[key].lower()
+    return filters

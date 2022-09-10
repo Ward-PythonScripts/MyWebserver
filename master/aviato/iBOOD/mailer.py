@@ -42,7 +42,7 @@ class Mailer():
                 soldout_string = "SOLDOUT"
             body_text += '<h1>'+deal.product_name+'</h1><img src="cid:'+image_id+'"><h2>advice price was: '+str(deal.product_advice_price)+' EUR, now available for: '+str(deal.product_curr_price)+' EUR ('+str(deal.product_discount_percentage)+')</h2><a href="'+str(deal.product_link)+'" >Click to go to iDOOB.com <a><br>'+soldout_string+'<br><br><br><br>'
 
-            image_index +=1
+            image_index += 1
 
         mail_text = MIMEText(body_text,'html')
         msg.attach(mail_text)
@@ -59,6 +59,8 @@ class Mailer():
             image_id = "image"+str(image_index)
             image.add_header('Content-ID','<'+image_id+'>')
             msg.attach(image)
+            #twice so that we will add it as an attachement as well
+            msg.attach(image)
 
             image_index += 1
 
@@ -73,6 +75,7 @@ class Mailer():
     def filter_for_already_informed_mails(self):
         deals = self.deals
         for deal in deals:
+            deal.load_product_image()
             if ibood_db.create_item_and_add_to_history(name=deal.product_name,curr_price=deal.product_curr_price,
                 advice_price=deal.product_advice_price,discount_percentage=deal.get_discount_as_numbers(),
                 image_url=deal.product_image_url,image=deal.product_image,link=deal.product_link,soldout=deal.is_soldout,

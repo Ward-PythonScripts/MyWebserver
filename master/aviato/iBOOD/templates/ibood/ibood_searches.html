@@ -104,7 +104,8 @@
         <h3>edit/add search</h3>
         <h4>string->use lower case, everything will be converted to lower case when comparing anyways<br>
             bool->use true or false, nothing else<br>
-            int->use a number, no identifiers or whatever</h4>
+            int->use a number, no identifiers or whatever<br>
+            Carefull, it is space sensitive, search for "tv" will return "lichtvest" as well.</h4>
         <form method="post" id="edit-search-form">
             {%csrf_token%}
             <input type="hidden" id="recipient-id-input" name="recipientId" value="to_be_changed_when_loading_window">

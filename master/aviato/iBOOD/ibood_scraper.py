@@ -1,7 +1,9 @@
+from unittest import case
 import requests
 from bs4 import BeautifulSoup
 import traceback
 import json
+import time
 
 from . import ibood_db
 from .mailer import Mailer
@@ -12,47 +14,77 @@ POSSIBLE_FILTERS = ['name-contains','not-name-contains','inches-smaller',
     'inches-bigger','discount-bigger','price-smaller','not-soldout']
 
 
+def get_all_dealslink(page_nr):
+    return "https://www.ibood.com/be/nl/all-deals/?page="+str(page_nr)
+
+
 def collect_deals():
-    url = "https://www.ibood.com/be/nl/all-deals/?vertical=electronics"
-    IBOOD_ITEM_CLASS = "jss96" #zou ge nog kunnen zoeken op div[data-testid="card-offer"]
-    IBOOD_ITEM_NAME_CLASS = "jss102"
-    IBOOD_ADVICE_PRICE = "jss105"
-    IBOOD_CURR_PRICE = "jss107"
-    IBOOD_PROD_LINK = "jss108"
-    IBOOD_DISCOUNT_PERCENTAGE = "jss98"
-    IBOOD_PROD_IMAGE = "jss101"
+    #electronics_url = "https://https://www.ibood.com/be/nl/all-deals/?page=1&vertical=electronics"
 
+    products_list = []
 
-    response = requests.get(url)
+    #for each page in all_deals
+    current_page = 1
+    still_pages_left = True
+    while(still_pages_left):
+        url = get_all_dealslink(current_page)
+        response = requests.get(url)
+        if response.ok:
+            try:
+                #get all elements from the page
+                soup = BeautifulSoup(response.text,'html.parser')
+                items = soup.find_all("div",{"class": "MuiGrid-item"})
+                for item in items:
+                    try:
+                        #object class names are generated dynamically -> can't parse it with those
+                        card_offer_container = item.findChild("div")
+                        product_link_container = card_offer_container.findChild("a")
+                        product_link = "https://www.ibood.com"+product_link_container.get("href")  
+                        item_info_container = product_link_container.findChild("div")
+                        other_info = item_info_container.findChildren("div")
+                        for x in range(0,len(other_info)):
+                            if x == 0:
+                                #gettting the discount
+                                product_discount_percentage = other_info[x].get_text()
+                            elif x == 1:
+                                #getting the image
+                                image_tag_cont = other_info[x].findChild("img")
+                                product_image_url = image_tag_cont.get("src")
+                            elif x == 2:
+                                #prices and name
+                                product_name = other_info[x].findChild("h2").get_text()
+                                prices_conts = other_info[x].findChildren("div")
+                                product_advice_price = prices_conts[0].findChild("span").get_text()
+                                product_curr_price = prices_conts[1].findChild("div").get_text()
+                            elif x == 3:
+                                #there was an element that specifies that the item is soldout
+                                is_soldout = True
+
+                        products_list.append(IboodDeal(product_name,product_advice_price,product_curr_price,
+                            product_discount_percentage,product_image_url,product_link,is_soldout))
+                    except AttributeError as ae:
+                        #probably means it was a Nonetype -> found some item that doesn't have a link and is probably just some ui element somewhere
+                        pass
+                    except Exception as e:
+                        print("exception in parsing the webpage but continuing anyways\n",traceback.format_exc())
+                
+                #check if there is still another page left
+                page_references = soup.findAll("span",{"data-testid":"offers-pagination-page-number"})
+                last_reference = page_references[len(page_references)-1]
+                last_pagenr = last_reference.get_text()
+                if int(last_pagenr) <= current_page:
+                    #at the last page -> stop looking for the next pages
+                    still_pages_left = False       
+                current_page += 1      
+                print("IBOOD: Scanned a page, this is slowed down with a sleep of 5 seconds as to not overload the ibood site")       
+                    
+            except Exception as e:
+                print(traceback.format_exc())
+        #wait as to not overspam their server and get banned
+        time.sleep(5)
     
-    if response.ok:
-        try:
+    return products_list
 
-            products_list = []
-
-            soup = BeautifulSoup(response.text,'html.parser')
-            items = soup.find_all("div",{"class": IBOOD_ITEM_CLASS})
-            for item in items:
-                try:
-
-                    product_name = item.find("h2",{"class":IBOOD_ITEM_NAME_CLASS}).get_text()
-                    product_advice_price = item.find("span",{"class":IBOOD_ADVICE_PRICE}).get_text()
-                    product_curr_price = item.find("div",{"class":IBOOD_CURR_PRICE}).get_text()
-                    product_discount_percentage = item.find("div",{"class":IBOOD_DISCOUNT_PERCENTAGE}).get_text()
-                    product_image_url = item.find("img",{"class":IBOOD_PROD_IMAGE}).get("src")
-                    product_image = requests.get("https:"+product_image_url).content
-                    product_link = "https://www.ibood.com"+item.find("a",{"class":IBOOD_PROD_LINK}).get("href")
-                    is_soldout = (item.find("div",{"class":"jss105"}) is not None)
-
-                    products_list.append(IboodDeal(product_name,product_advice_price,product_curr_price,
-                        product_discount_percentage,product_image_url,product_image,product_link,is_soldout))
-                except Exception as e:
-                    print("exception in parsing the webpage but continuing anyways\n",traceback.format_exc())
-                
-            return products_list
-                
-        except Exception as e:
-            print(traceback.format_exc())
 
 def filter_deals(deals:list[IboodDeal],filter):
     #product name filters, english bad so instead of higher/lower -> bigger/smaller my bad ;)
