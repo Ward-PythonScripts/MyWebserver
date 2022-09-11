@@ -8,6 +8,7 @@ numpy==1.23.1
 praw==7.6.0
 schedule==1.1.0
 beautifulsoup4==4.11.1
+html2text
 
 #You will still need to get some permissions for the files that the program will write to:
 #giving permission is done as follows: sudo chmod -R 777 gameDealsFiles/  

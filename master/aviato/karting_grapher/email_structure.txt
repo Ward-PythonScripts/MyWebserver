@@ -1,0 +1,44 @@
+Zoek voor "hier zijn jouw resultaten" -> lijn daaronder staat de sessie waar ze van komen met tijdstip en al
+
+Eerst een identifier, dan :
+    Pos.
+    Kart
+    Piloot
+    Rondes
+    Snelste Ronde
+    Afstand
+    Gem.
+en dan de data, dus gewoon vanaf dat ge Gem. tegengekomen zijt verder line per line parsen tot en de data in objecten steken
+
+Dan daarna identifier:
+    5
+    6
+    7
+    8
+    9
+    10
+En dan komen terug 
+    kartnr
+    Piloot
+    tijd1
+    tijd2
+    tijd3
+    ...
+
+Dan krijgen we best times of the week:
+identifier: 
+    Best times of the week 270cc
+De data header:
+    #
+    Piloot
+    Snelste ronde
+en dan komt de data
+
+Dan krijgen we trackrecords:
+identifier:
+    Track records 270cc
+de header:
+    #
+    Piloot
+    Snelste ronde
+en dan de data

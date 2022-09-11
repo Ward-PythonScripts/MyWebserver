@@ -1,4 +1,3 @@
-from unittest import case
 import requests
 from bs4 import BeautifulSoup
 import traceback

@@ -1,6 +1,7 @@
 import sched
 from notifier import game_reader
 from iBOOD import ibood_scraper
+from karting_grapher import karting_tracker
 
 from schedule import Scheduler,CancelJob
 import threading
@@ -45,10 +46,11 @@ def start_scheduler():
     print("Starting scheduler")
     scheduler = Scheduler()
     scheduler.run_continuously()
-    scheduler.every(4).hours.do(game_reader.main)
-    scheduler.every(4).hours.do(ibood_scraper.start_scraping)
-    start_one_time_job(scheduler,game_reader.main)
-    start_one_time_job(scheduler,ibood_scraper.start_scraping)
+    # scheduler.every(4).hours.do(game_reader.main)
+    # scheduler.every(4).hours.do(ibood_scraper.start_scraping)
+    # start_one_time_job(scheduler,game_reader.main)
+    # start_one_time_job(scheduler,ibood_scraper.start_scraping)
+    start_one_time_job(scheduler,karting_tracker.main)
     
 
 
