@@ -1,0 +1,29 @@
+Home page -> kunt ge kiezen tussen een paar dingen die ge kunt bekijken
+met helemaal van onder de optie om data in een grafiek te steken uit een file
+
+In het algemeen wel nice als ge favorite drivers hebt die ge dan makkelijker kunt vinden als ge drivers moet selecteren
+
+Opties:
+    Session bekijken:
+        Krijgt al de tijden van de verschillende drivers te zien op 1 chart, kunt dan kiezen welke chauffeurs dat ge aan of af zet
+        zeker voor zorgen dat ge een knop hebt om al de andere te verbergen. En dan kunt ge individueel andere aanzetten
+    Driver bekijken:
+        Een paar stats:
+            Hoeveel laps al gereden, als ge weet hoeveel m per lap kunt ge zelf in km uitrekenen. Meest gebruikte kart
+        Times in session:
+            Krijgt ge al de en tijden van al de de sessies te zien. Met in de legende een structuur per track -> geeft de optie
+            om alleen de tijden van een bepaalde track te bekijken. Ge moet ook al de sessies van een track in een keer kunnen hiden
+            In die sessies kunt ge dan een constante toevoegen voor track record die ge kunt aanzetten als ge wilt
+        Progress:
+            Dan kunt ge de snelste tijden zien voor elke sessie die ge op een specifieke track hebt gedaan. Kunt ge mooi in 
+            verschillende kleuren doen. Of Ge kunt ook doen dat ge allemaal achter elkaar zet en dan per track een andere
+            kleur gebruikt om het weer te geven. 
+            Ook hier kunt ge per track een constante lijn toevoegen die toont waar het track record zich bevind
+    Head to Head:
+        Dan kunt ge zien voor twee drivers hoeveel dat ze elkaar al hebben verslaan, hoeveel km gereden, hoeveel laps, hoeveel laps 
+        sneller dan de andere, wie het snelste was in sessies waar ge allebie in zat
+
+    Kart:
+        karts vergelijken op basis van performance mss?
+
+

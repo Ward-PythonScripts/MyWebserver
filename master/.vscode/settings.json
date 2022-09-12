@@ -1,0 +1,10 @@
+{
+    //stops autocomplete in files like .txt files, you can ask for it wiht CTRL+SPACE 
+    "[plaintext]": {
+        "editor.quickSuggestions": {
+          "other": false,
+          "comments": false,
+          "strings": false
+        }
+      }
+}

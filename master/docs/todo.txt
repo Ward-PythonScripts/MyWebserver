@@ -1,11 +1,3 @@
-This is where we left off.
-
-It is actually kind of a hasstle to just recode everything in javascript
-could be unnecesarry, would be very cool if we could save the added file locally on the webserver
-and then start a python script that will read from the file and add to a database or something
-than the javascript can read from the database and make a chart from the data found in the database
-
-
 found links:
     executing shell command from html: https://stackoverflow.com/questions/5422093/run-a-program-from-a-local-webpage
     chart.js libary: https://www.chartjs.org/docs/latest/

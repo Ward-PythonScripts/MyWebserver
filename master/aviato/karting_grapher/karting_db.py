@@ -200,6 +200,16 @@ def get_current_track():
         print(traceback.print_exc())
         conn.close()
 
+def get_track_layout(track_id):
+    try:
+        conn = sqlite3.connect(DB_REF)
+        result = conn.execute("Select layout_image from " + TABLE_TRACK + " where ID="+str(track_id)).fetchone()
+        image = result[0]
+        conn.close()
+        return image
+    except Exception as e:
+        print(traceback.print_exc())
+        conn.close() 
 
 def update_track_layout(image_url,image):
     try:
@@ -224,6 +234,7 @@ def update_track_layout(image_url,image):
         cursor.close()
         conn.close()
             
+
 
 
 CREATE_TABLE_DRIVER = """CREATE TABLE "Driver" (
