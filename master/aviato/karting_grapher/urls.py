@@ -5,5 +5,10 @@ from . import views
 urlpatterns = {
     path("",views.karting_home,name="karting_home"),
     path("new_time/",views.karting_add_new_time,name="karting_new_time"),
+    path("sessions/",views.show_sessions,name="karting_session"),
+    path("driver/",views.show_driver),
+    path("head_to_head/",views.head_to_head),
+    path("kart/",views.show_kart),
+
 
 }

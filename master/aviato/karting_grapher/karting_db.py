@@ -1,8 +1,17 @@
 import sqlite3
 import traceback
 from datetime import datetime
+from .container import LapsDriver,Session
 
 
+def get_driver_name(driver_id,cursor):
+    try:
+        select_stmt = "Select name from Driver where ID=?"
+        result = cursor.execute(select_stmt,[driver_id]).fetchone()
+        return result[0]
+    except:
+        print(traceback.print_exc())
+        cursor.close()
 
 def get_driver_id(driver_name):
     try:
@@ -168,12 +177,12 @@ def store_session_info(session_info_string): #returns session id it just created
         conn = sqlite3.connect(DB_REF)
         cursor = conn.cursor()
         #first check if the session wasn't yet present in the database
-        select_stmt = "Select * from " + TABLE_SESSION + " where timestamp_in_minutes=?"
+        select_stmt = "Select * from " + TABLE_SESSION + " where timestamp=?"
         result = cursor.execute(select_stmt,[session_time_stamp]).fetchone()
         if result is None or len(result) == 0:
             #session hasn't been stored yet -> start storing it
             print("Storing session of",session_time_stamp,time_session)
-            create_statment = "INSERT INTO " + TABLE_SESSION + " (timestamp_in_minutes,track_id) VALUES (?,?)"
+            create_statment = "INSERT INTO " + TABLE_SESSION + " (timestamp,track_id) VALUES (?,?)"
             cursor.execute(create_statment,[session_time_stamp,get_current_track()])
             conn.commit()
             session_id = cursor.lastrowid
@@ -234,6 +243,76 @@ def update_track_layout(image_url,image):
         cursor.close()
         conn.close()
             
+def get_sessions_as_objects():
+    try:
+        conn = sqlite3.connect(DB_REF)
+        #get all sesions
+        search_stmt = "SELECT * from " + TABLE_SESSION
+        cursor = conn.cursor()
+        results = cursor.execute(search_stmt).fetchall()
+        session_list = []
+        for result in results:
+            session_id = result[0]
+            timestamp = result[1]
+            track_id = result[2]
+            new_session = Session(session_id,timestamp,track_id)
+            session_list.append(new_session)
+            #get all the drivers that have driven on this session and all the laps that they have driven
+            driver_ids = get_drivers_in_session(session_id=session_id,cursor=cursor)
+            for driver_id in driver_ids:
+                driver_name = get_driver_name(driver_id,cursor)
+                kart_used = get_drivers_kart_in_session(driver_id=driver_id,session_id=session_id,cursor=cursor)
+                laps = get_drivers_laps_in_session(driver_id,session_id,cursor)
+                new_laps_driver = LapsDriver(driver_id=driver_id,driver_name=driver_name,kart_nr=kart_used)
+                for lap in laps:
+                    new_laps_driver.add_laptime_as_string(lap)
+                new_session.add_drivers_laps(new_laps_driver)
+        return session_list
+
+    except:
+        print(traceback.print_exc())
+        cursor.close()
+        conn.close()
+
+
+def get_drivers_laps_in_session(driver_id,session_id,cursor):
+    try:
+        stmt = "Select laptime_millis from " + TABLE_LAP + " where driver_id=? and session_id=?"
+        results = cursor.execute(stmt,[driver_id,session_id])
+        laps = []
+        for result in results:
+            laps.append(result[0])
+        return laps
+    except:
+        print(traceback.print_exc())
+        cursor.close()
+
+
+def get_drivers_in_session(session_id,cursor):
+    try:
+        get_drivers_stmt = "Select DISTINCT(driver_id) from Lap where session_id=? order by driver_id,lap_of_session"
+        drivers = cursor.execute(get_drivers_stmt,[session_id]).fetchall()
+        driver_ids = []
+        for driver in drivers:
+            driver_ids.append(driver[0])
+        return driver_ids
+    except:
+        print(traceback.print_exc())
+        cursor.close()
+
+
+
+
+def get_drivers_kart_in_session(driver_id,session_id,cursor):
+    try:
+        get_kart_stmt = "Select kart_nr from " + TABLE_KART + " where driver_id=? and session_id=?"
+        result = cursor.execute(get_kart_stmt,[driver_id,session_id]).fetchone()
+        return result[0]
+    except:
+        print(traceback.print_exc())
+        cursor.close()
+        
+
 
 
 
@@ -263,11 +342,11 @@ CREATE_TABLE_LAP = """CREATE TABLE "Lap" (
 )"""
 CREATE_TABLE_SESSION = """CREATE TABLE "Session" (
 	"ID"	INTEGER,
-	"timestamp_in_minutes"	INTEGER,
+	"timestamp"	INTEGER,
 	"track_id"	INTEGER,
-	PRIMARY KEY("ID" AUTOINCREMENT),
-	FOREIGN KEY("track_id") REFERENCES "Track"("ID")
-);"""
+	FOREIGN KEY("track_id") REFERENCES "Track"("ID"),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+)"""
 CREATE_TABLE_TRACK = """CREATE TABLE "Track" (
 	"ID"	INTEGER,
 	"begin_date"	INTEGER NOT NULL,

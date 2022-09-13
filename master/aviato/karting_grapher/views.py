@@ -3,6 +3,8 @@ from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse
 from .graph_generator import generate_graph
+from . import karting_db
+from .container import Session,LapsDriver
 
 
 # Create your views here.
@@ -10,6 +12,25 @@ from .graph_generator import generate_graph
 def karting_home(request):
     template = loader.get_template('karting_grapher/karting_grapher.html')
     return HttpResponse(template.render({},request))
+
+def show_sessions(request):
+    template = loader.get_template('karting_grapher/show_sessions.html')
+    all_sessions = karting_db.get_sessions_as_objects()
+    json_list = []
+    for session in all_sessions:
+        json_list.append(session.get_as_json())
+    return HttpResponse(template.render({
+        "sessions":json_list
+    }))
+
+def show_driver(request):
+    return HttpResponse("Show drivers")
+
+def head_to_head(request):
+    return HttpResponse("head_to_head")
+
+def show_kart(request):
+    return HttpResponse("Show kart")
 
 def karting_add_new_time(request):
     if request.method == 'POST':
@@ -38,4 +59,6 @@ def remove_begin_line_encoding(line):
         #if there was a begin line encoding we should also remove the ' at the end of it
         line = line[:-1]
     return line
+
+
         
