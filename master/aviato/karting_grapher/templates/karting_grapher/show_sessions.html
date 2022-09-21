@@ -4,115 +4,22 @@
 {%block head%}
 <title>Sessions</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js" integrity="sha512-klQv6lz2YR+MecyFYMFRuU2eAl8IPRo6zHnsc9n142TJuJHS8CG0ix4Oq9na9ceeg1u5EkBfZsFcV3U7J51iew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'scripts/karting_charter.js'%}"></script>
 {%endblock%}
 
 {%block body%}
 <canvas id="myChart" height="auto vh">
     <!--get inflated with the char.js-->
 </canvas>
+<button type="button" > Test button</button>
 <script>
     var data = {{sessions|safe}}
     console.log(data);
     //find the latest session, this will be rendered by default
     latest_session_index = get_latest_session_index(data);
-    label_array = get_labels(data,latest_session_index);
-    console.log("label array ",label_array);
-    datasets_array = get_laptimes_as_data(data,latest_session_index);
-    console.log("datasets_array",datasets_array)
-    const ctx = document.getElementById('myChart').getContext('2d');
-    const myChart = new Chart(ctx,{
-        type:'line',
-        data: {
-            labels: label_array,
-            datasets: datasets_array
-        }
-    })
-    {% comment %} const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    }); {% endcomment %}
-    function get_latest_session_index(data){
-        var latest_session_id = 0;
-        var latest_session_time = 0;
-        var latest_sessoin_index = 0;
-        for(var key in Object.keys(data)){
-            if (data[key].session.timestamp > latest_session_time){
-                latest_session_time = data[key].session.timestamp;
-                latest_session_id = data[key].session.session_id;
-                latest_sessoin_index = key;
-            }
-        }
-        return latest_sessoin_index;
-    }
-    function get_labels(data,session_index){
-        var max_number_of_laps = 0;
-        for(var key in Object.keys(data[session_index].session.drivers_laps)){
-            driven_laps = data[session_index].session.drivers_laps[key].laptimes.length;
-            if(max_number_of_laps<driven_laps){
-                max_number_of_laps = driven_laps;
-            }
-        }
-        max_number_of_laps_as_labels = [];
-        integ = 1;
-        console.log(Array(max_number_of_laps).keys());
-        while(integ <= max_number_of_laps){
-            max_number_of_laps_as_labels.push(integ);
-            integ ++;
-        }
-        return max_number_of_laps_as_labels;
-
-    }
-    function get_laptimes_as_data(data,session_index){
-        datasets_array = [];
-        for(var key2 in Object.keys(data[session_index].session.drivers_laps)){
-            datasets_array.push({
-                label: String(data[session_index].session.drivers_laps[key2].driver_name) + " ["+String(data[session_index].session.drivers_laps[key2].kart_nr)+"]",
-                data: laptimes_to_seconds_laptimes(data[session_index].session.drivers_laps[key2].laptimes),
-                borderColor: 'rgba(255, 99, 132, 0.9)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            })
-        }
-        return datasets_array;
-    }
-    function laptimes_to_seconds_laptimes(laptimes){
-        newlist = [];
-        for ( var key in Object.keys(laptimes)){
-            newlist.push(millis_to_seconds(laptimes[key]));
-        }
-        return newlist;
-    }
-    function millis_to_seconds(millis){
-        return millis/1000;
-    }
+    draw_laps_from_session(data,latest_session_index);
 </script>
+
 {%endblock%}

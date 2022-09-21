@@ -1,0 +1,3 @@
+voor plugins te installeren, ge kunt ze vinden op de chartjs github
+https://cdnjs.com/libraries/
+hier kunt ge ze van downloaden
