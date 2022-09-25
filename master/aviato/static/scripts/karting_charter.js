@@ -175,23 +175,26 @@ function timestamp_to_string(timestamp){
 }
 
 
-function inflate_session_buttons(data){
+function inflate_session_buttons(data,current_session_index){
     const buttons_div = document.getElementById("session_buttons");
     var sorted_data = data;
     sorted_data.sort(function(a,b){
         return a.session.timestamp - b.session.timestamp;
     });
     for(var session_key in Object.keys(sorted_data)){
-        button = generate_session_button(sorted_data[session_key].session,session_key);
+        button = generate_session_button(sorted_data[session_key].session,session_key,(session_key==current_session_index));
         buttons_div.appendChild(button);
     }
 }
 
-function generate_session_button(session,index){
+function generate_session_button(session,index,is_current_session){
     date_string = timestamp_to_string(session.timestamp);
     button = document.createElement("button");
     button.setAttribute("id",index);
     button.setAttribute("onclick","session_selector_button_callback(this.id)");
+    if(is_current_session){
+        button.setAttribute("style","background-color:green;");
+    }
     button.innerHTML = date_string;
     return button;
 }

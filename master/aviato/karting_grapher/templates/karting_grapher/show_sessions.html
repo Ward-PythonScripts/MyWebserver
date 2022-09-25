@@ -28,11 +28,13 @@
     if (wanted_session == -1){
         latest_session_index = get_latest_session_index(data);
         draw_laps_from_session(data,latest_session_index);
+        inflate_session_buttons(data,latest_session_index);
     }
     else{
         draw_laps_from_session(data,wanted_session);
+        inflate_session_buttons(data,wanted_session);
+
     }
-    inflate_session_buttons(data);
 </script>
 
 {%endblock%}
