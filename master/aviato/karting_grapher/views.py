@@ -13,14 +13,19 @@ def karting_home(request):
     template = loader.get_template('karting_grapher/karting_grapher.html')
     return HttpResponse(template.render({},request))
 
-def show_sessions(request):
+def show_default_session(request):
+    return show_specific_sessions(request=request,session_index=-1)
+    #the -1 will be accounted for in the html/js code
+
+def show_specific_sessions(request,session_index):
     template = loader.get_template('karting_grapher/show_sessions.html')
     all_sessions = karting_db.get_sessions_as_objects()
     json_list = []
     for session in all_sessions:
         json_list.append(session.get_as_json())
     return HttpResponse(template.render({
-        "sessions":json_list
+        "sessions":json_list,
+        "wanted_session":session_index,
     }))
 
 def show_driver(request):

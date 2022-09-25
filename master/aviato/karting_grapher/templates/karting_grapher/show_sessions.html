@@ -10,16 +10,29 @@
 {%endblock%}
 
 {%block body%}
+<h2 id="session_info">Session info</h2>
+<button onclick="hide_all_button_callback()">Hide All</button>
+<button onclick="show_all_button_callback()">Show All</button>
 <canvas id="myChart" height="auto vh">
     <!--get inflated with the char.js-->
 </canvas>
-<button type="button" > Test button</button>
+<div id="session_buttons">
+    <h2>Load different session</h2>
+    <!--gets inflated as well-->
+</div>
 <script>
     var data = {{sessions|safe}}
     console.log(data);
+    var wanted_session = {{wanted_session}};
     //find the latest session, this will be rendered by default
-    latest_session_index = get_latest_session_index(data);
-    draw_laps_from_session(data,latest_session_index);
+    if (wanted_session == -1){
+        latest_session_index = get_latest_session_index(data);
+        draw_laps_from_session(data,latest_session_index);
+    }
+    else{
+        draw_laps_from_session(data,wanted_session);
+    }
+    inflate_session_buttons(data);
 </script>
 
 {%endblock%}
