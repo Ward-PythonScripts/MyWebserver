@@ -314,12 +314,15 @@ def get_drivers_kart_in_session(driver_id,session_id,cursor):
 
 def get_all_drivers():
     try:
-        get_drivers_stmt = "Select name from Driver order by name asc"
+        get_drivers_stmt = "Select * from Driver order by name asc"
         conn = sqlite3.connect(DB_REF)
         results = conn.execute(get_drivers_stmt).fetchall()
         driver_names = []
         for result in results:
-            driver_names.append(result[0])
+            driver_names.append({
+                "name":result[1],
+                "id":result[0]
+                })
         return driver_names
     except:
         print(traceback.print_exc())
@@ -328,17 +331,39 @@ def get_all_drivers():
 
 def get_driver_like(target_string):
     try:
-        get_driver_like_stmt = 'Select name from Driver where name like("%' + str(target_string) + '%") order by name asc'
+        get_driver_like_stmt = 'Select * from Driver where name like("%' + str(target_string) + '%") order by name asc'
         conn = sqlite3.connect(DB_REF)
         results = conn.execute(get_driver_like_stmt).fetchall()
         driver_names = []
         for result in results:
-            driver_names.append(result[0])
+            driver_names.append({
+                "name":result[1],
+                "id":result[0]
+                })
         return driver_names
     except:
         print(traceback.print_exc())
         return None
 
+def get_driver_id_from_name(driver_name):
+    try:
+        get_driver_like_stmt = 'Select ID from Driver where name="'+str(driver_name)+'"'
+        conn = sqlite3.connect(DB_REF)
+        results = conn.execute(get_driver_like_stmt).fetchone()
+        return results[0]
+    except:
+        print(traceback.print_exc())
+        return None
+
+def get_driver_name_from_id(driver_id):
+    try:
+        get_driver_like_stmt = 'Select name from Driver where ID='+str(driver_id)
+        conn = sqlite3.connect(DB_REF)
+        results = conn.execute(get_driver_like_stmt).fetchone()
+        return results[0]
+    except:
+        print(traceback.print_exc())
+        return None
 
 
 CREATE_TABLE_DRIVER = """CREATE TABLE "Driver" (

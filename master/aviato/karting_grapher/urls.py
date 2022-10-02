@@ -7,6 +7,7 @@ urlpatterns = {
     path("new_time/",views.karting_add_new_time,name="karting_new_time"),
     path("sessions/",views.show_default_session),
     path("sessions/<int:session_index>",views.show_specific_sessions,name="karting_session"),
+    path("driver/<int:driver_id>",views.show_driver_menu),
     path("driver/",views.show_driver),
     path("head_to_head/",views.head_to_head),
     path("kart/",views.show_kart),

@@ -46,6 +46,15 @@ def show_specific_drivers(request,target_string):
         "drivers":all_drivers
     },request))
 
+def show_driver_menu(request,driver_id):
+    template = loader.get_template('karting_grapher/driver_menu.html')
+    driver_name = karting_db.get_driver_name_from_id(driver_id)
+    context = {
+        'name':driver_name
+    }
+    return HttpResponse(template.render(context,request))
+
+
 def head_to_head(request):
     return HttpResponse("head_to_head")
 

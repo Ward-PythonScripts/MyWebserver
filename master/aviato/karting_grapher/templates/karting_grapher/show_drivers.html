@@ -18,9 +18,15 @@
 </form>
 {% for driver in drivers%}
 <div style="padding-left:20px;">
-    <button>{{driver}}</button>
+    <button value="{{driver.id}}" onclick="driver_button_callback(this.value)">{{driver.name}}</button>
 </div>
 {% endfor %}
+
+<script>
+    function driver_button_callback(driver_id){
+        window.location.href += String(driver_id);
+    }
+</script>
 
 
 {% endblock %}
