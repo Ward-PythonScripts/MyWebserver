@@ -311,8 +311,33 @@ def get_drivers_kart_in_session(driver_id,session_id,cursor):
     except:
         print(traceback.print_exc())
         cursor.close()
-        
 
+def get_all_drivers():
+    try:
+        get_drivers_stmt = "Select name from Driver order by name asc"
+        conn = sqlite3.connect(DB_REF)
+        results = conn.execute(get_drivers_stmt).fetchall()
+        driver_names = []
+        for result in results:
+            driver_names.append(result[0])
+        return driver_names
+    except:
+        print(traceback.print_exc())
+        return None
+
+
+def get_driver_like(target_string):
+    try:
+        get_driver_like_stmt = 'Select name from Driver where name like("%' + str(target_string) + '%") order by name asc'
+        conn = sqlite3.connect(DB_REF)
+        results = conn.execute(get_driver_like_stmt).fetchall()
+        driver_names = []
+        for result in results:
+            driver_names.append(result[0])
+        return driver_names
+    except:
+        print(traceback.print_exc())
+        return None
 
 
 

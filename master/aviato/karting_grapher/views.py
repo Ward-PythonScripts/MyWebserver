@@ -29,7 +29,22 @@ def show_specific_sessions(request,session_index):
     }))
 
 def show_driver(request):
-    return HttpResponse("Show drivers")
+    if request.method == 'POST':
+        if request.POST['target_name'] is not None:
+            target_name = request.POST['target_name']
+            return show_specific_drivers(request=request,target_string=target_name)
+    else:
+        template = loader.get_template('karting_grapher/show_drivers.html')
+        all_drivers = karting_db.get_all_drivers()
+        return HttpResponse(template.render({
+            "drivers":all_drivers
+        },request))
+def show_specific_drivers(request,target_string):
+    template = loader.get_template('karting_grapher/show_drivers.html')
+    all_drivers = karting_db.get_driver_like(target_string)
+    return HttpResponse(template.render({
+        "drivers":all_drivers
+    },request))
 
 def head_to_head(request):
     return HttpResponse("head_to_head")
