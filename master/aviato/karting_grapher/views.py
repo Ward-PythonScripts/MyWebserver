@@ -49,8 +49,10 @@ def show_specific_drivers(request,target_string):
 def show_driver_menu(request,driver_id):
     template = loader.get_template('karting_grapher/driver_menu.html')
     driver_name = karting_db.get_driver_name_from_id(driver_id)
+    best_times = karting_db.get_best_time_from_sessions(driver_id)
     context = {
-        'name':driver_name
+        'name':driver_name,
+        'best_times':best_times
     }
     return HttpResponse(template.render(context,request))
 

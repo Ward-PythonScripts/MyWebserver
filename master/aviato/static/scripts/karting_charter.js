@@ -237,4 +237,16 @@ function show_all_button_callback(){
     }
 }
 
+function render_best_sessions_graph(graph_canvas_id,data){
+    label_array = best_sessions_get_labels(data);
+}
+
+function best_sessions_get_labels(data){
+    labels = [];
+    for(var key in Object.keys(data)){
+        timest = data[key].timestamp;
+
+    } 
+}
+
 

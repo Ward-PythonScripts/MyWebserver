@@ -2,11 +2,25 @@
 {% load static %}
 
 {%block head%}
+<title>{{name}}</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js" integrity="sha512-klQv6lz2YR+MecyFYMFRuU2eAl8IPRo6zHnsc9n142TJuJHS8CG0ix4Oq9na9ceeg1u5EkBfZsFcV3U7J51iew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'scripts/karting_charter.js'%}"></script>
 {%endblock%}
 
 {% block body%}
 
 <h1>{{name}}</h1>
+<canvas id="best_times" height="200">
+    <!--get inflated with the char.js-->
+</canvas>
 
 
+
+<script>
+    const best_laps = {{best_times|safe}};
+    render_best_sessions_graph("best_times",best_laps);
+    
+</script>
 {% endblock %}

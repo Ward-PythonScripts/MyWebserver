@@ -314,7 +314,7 @@ def get_drivers_kart_in_session(driver_id,session_id,cursor):
 
 def get_all_drivers():
     try:
-        get_drivers_stmt = "Select * from Driver order by name asc"
+        get_drivers_stmt = "Select * from "+TABLE_DRIVER+" order by name asc"
         conn = sqlite3.connect(DB_REF)
         results = conn.execute(get_drivers_stmt).fetchall()
         driver_names = []
@@ -323,15 +323,17 @@ def get_all_drivers():
                 "name":result[1],
                 "id":result[0]
                 })
+        conn.close()
         return driver_names
     except:
         print(traceback.print_exc())
+        conn.close()
         return None
 
 
 def get_driver_like(target_string):
     try:
-        get_driver_like_stmt = 'Select * from Driver where name like("%' + str(target_string) + '%") order by name asc'
+        get_driver_like_stmt = 'Select * from '+TABLE_DRIVER+' where name like("%' + str(target_string) + '%") order by name asc'
         conn = sqlite3.connect(DB_REF)
         results = conn.execute(get_driver_like_stmt).fetchall()
         driver_names = []
@@ -340,29 +342,58 @@ def get_driver_like(target_string):
                 "name":result[1],
                 "id":result[0]
                 })
+        conn.close()
         return driver_names
     except:
         print(traceback.print_exc())
+        conn.close()
         return None
 
 def get_driver_id_from_name(driver_name):
     try:
-        get_driver_like_stmt = 'Select ID from Driver where name="'+str(driver_name)+'"'
+        get_driver_like_stmt = 'Select ID from '+TABLE_DRIVER+' where name="'+str(driver_name)+'"'
         conn = sqlite3.connect(DB_REF)
         results = conn.execute(get_driver_like_stmt).fetchone()
+        conn.close()
         return results[0]
     except:
         print(traceback.print_exc())
+        conn.close()
         return None
 
 def get_driver_name_from_id(driver_id):
     try:
-        get_driver_like_stmt = 'Select name from Driver where ID='+str(driver_id)
+        get_driver_like_stmt = 'Select name from ' +TABLE_DRIVER+ ' where ID='+str(driver_id)
         conn = sqlite3.connect(DB_REF)
         results = conn.execute(get_driver_like_stmt).fetchone()
+        conn.close()
         return results[0]
     except:
         print(traceback.print_exc())
+        conn.close()
+        return None
+
+def get_best_time_from_sessions(driver_id):
+    try:
+        get_times_stmt = '''select Max(Lap.laptime_millis),Session.timestamp FROM Driver 
+                            Inner JOIN Lap on Lap.driver_id = Driver.ID
+                            Inner JOIN Session on Session.ID = lap.session_id
+                            where Driver.ID = 174
+                            GROUP By Lap.session_id
+                            order by Session.timestamp asc'''
+        conn = sqlite3.connect(DB_REF)
+        results = conn.execute(get_times_stmt).fetchall()
+        result_list = []
+        for result in results:
+            result_list.append({
+                'fastest':result[0],
+                'timestamp':result[1]
+            })
+        conn.close()
+        return result_list
+    except:
+        print(traceback.print_exc())
+        conn.close()
         return None
 
 
