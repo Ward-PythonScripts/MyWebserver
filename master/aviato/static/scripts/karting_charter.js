@@ -154,6 +154,7 @@ function millis_to_seconds(millis){
 }
 
 function set_session_info_tag(data,session_index){
+    console.log("actually gets called");
     session = data[session_index].session;
     session_tag = document.getElementById("session_info");
     date_string = timestamp_to_string(session.timestamp);
@@ -161,8 +162,8 @@ function set_session_info_tag(data,session_index){
 }
 
 function timestamp_to_string(timestamp){
-    var date = new Date(timestamp*1000); //timestamps are saved in seconds
-    var date_string = String(date.getDate()) + "/" + String(date.getMonth()) + "/" 
+    var date = new Date(timestamp*1000); //timestamps are saved in seconds but the months seem to start at 0 for some reason? -> do +1
+    var date_string = String(date.getDate()) + "/" + String(date.getMonth()+1) + "/" 
         + String(date.getFullYear()) + " " + String(date.getHours()) + ":";
     //following need if the minutes are 0 -> better formatting
     if(date.getMinutes() == 0){

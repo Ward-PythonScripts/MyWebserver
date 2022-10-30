@@ -127,7 +127,6 @@ def store_kart(kart_nr,session_id,driver_id):
 
 
 def store_session_info(session_info_string): #returns session id it just created, or -1 if session already exists
-    print("Session info string is:",session_info_string)
     is_still_session_nr = True
     is_still_hours = True
     is_still_minutes = True
