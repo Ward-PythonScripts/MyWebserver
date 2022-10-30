@@ -44,7 +44,7 @@ class KartingManager():
         file.close()
 
 def parse_records(all_lines,session_id):
-    print(all_lines)
+    #there are several ways in which the emails have been encoded, so if one doesn't work try the next one
     record_start_index = get_start_records(all_lines)
     if record_start_index == -1:
         print("Couldn't find the start of the records")
@@ -88,10 +88,74 @@ def get_start_records(all_lines):
         index += 1
     return -1
 
+def parse_lap_times_v2(all_lines,session_id):
+    starting_index = get_start_lap_times_v2(all_lines)
+    if starting_index == -1:
+        print("failed to find the start of the laptimes v2")
+    else:
+        """
+        layout is as follows:
+        '1', 'JOS MOTOCROSS   37.517  36.522  36.041  36.118  35.536  35.296  35.316  36.051  35.338  35.422', '35.265  35.315  35.260  35.267  35.491  35.097  35.262  35.532  35.167  37.143', '35.156'
+        Fucked LINE if you ask me    
+        """
+        first_driver = True
+        index = starting_index
+        laptimes = []
+        while True:
+            if all_lines[index].__contains__("270cc") or (len(all_lines[index]) <= 2 and all_lines[index].isdigit()):
+                #the end of all laptimes or a new kart -> save the parsed laptimes
+                if not first_driver:
+                    print(kartnr,driver_name,laptimes,session_id)
+                    exit() 
+                    karting_db.store_lap_times(kartnr,driver_name,laptimes,session_id)
+                first_driver = False
+                laptimes = []
+                if all_lines[index].__contains__("270cc"):
+                    return 0 #OK
+                else:
+                    kartnr = all_lines[index]
+            else:
+                #could either be the name of the driver or the coninuation of the laptimes
+                if not all_lines[index][0].isdigit():
+                    prev = ""
+                    wasName = True
+                    for character in str(all_lines[index]):
+                        print(character,prev,wasName)
+                        if wasName:
+                            if character.isdigit():
+                                print("prev was: ", prev)
+                                wasName = False
+                                driver_name = prev
+                                print("driver name",driver_name)
+                                prev = character   
+                            else:
+                                prev += character                    
+                        else:
+                            if character == " " and prev != "":
+                                laptimes.append(prev)
+                                prev = ""
+                            else:
+                                prev += character
+                else:
+                    #we start with the continuation of laptimes
+                    prev = ""
+                    for character in str(all_lines[index]):
+                        print(character,prev,wasName)           
+                        if character == " " and prev != "":
+                            laptimes.append(prev)
+                            prev = ""
+                        else:
+                            prev += character
+            index += 1
+
+
 def parse_lap_times(all_lines,session_id):
+    print(all_lines)
     starting_index = get_start_lap_times(all_lines)
     if starting_index == -1:
         print("failed to find the start of the laptimes")
+        #try via v2
+        parse_lap_times_v2(all_lines,session_id)
     else:
         """layout is as follows:
                 kartnr
@@ -131,6 +195,15 @@ def parse_lap_times(all_lines,session_id):
 
                 identifier_index += 1
                 index += 1
+
+
+def get_start_lap_times_v2(all_lines):
+    index = 0
+    for line in all_lines:
+        if line == "Kart    Piloot  1       2       3       4       5       6       7       8       9       10":
+            return index + 1
+        index += 1
+    return -1
 
 
 def get_start_lap_times(all_lines):
