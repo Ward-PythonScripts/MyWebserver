@@ -396,13 +396,29 @@ def get_best_time_from_sessions(driver_id):
         conn.close()
         return None
 
+def create_tables_if_dont_exist():
+    try:
+        conn = sqlite3.connect(DB_REF)
+        stmts = [CREATE_TABLE_DRIVER,CREATE_TABLE_KART,CREATE_TABLE_LAP,CREATE_TABLE_SESSION,CREATE_TABLE_TRACK,
+            CREATE_TABLE_TRACK_RECORD]
+        for stmt in stmts:
+            conn.execute(stmt)
+        conn.commit()
+        conn.close()
+    except:
+        print(traceback.print_exc())
+        conn.close()
+        return None
 
-CREATE_TABLE_DRIVER = """CREATE TABLE "Driver" (
+
+
+
+CREATE_TABLE_DRIVER = """CREATE TABLE IF NOT EXISTS "Driver" (
 	"ID"	INTEGER,
 	"name"	TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 )"""
-CREATE_TABLE_KART = """CREATE TABLE "Kart" (
+CREATE_TABLE_KART = """CREATE TABLE IF NOT EXISTS "Kart" (
 	"ID"	INTEGER,
 	"driver_id"	INTEGER,
 	"session_id"	INTEGER,
@@ -411,7 +427,7 @@ CREATE_TABLE_KART = """CREATE TABLE "Kart" (
 	FOREIGN KEY("session_id") REFERENCES "Session"("ID"),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 )"""
-CREATE_TABLE_LAP = """CREATE TABLE "Lap" (
+CREATE_TABLE_LAP = """CREATE TABLE IF NOT EXISTS "Lap" (
 	"ID"	INTEGER,
 	"session_id"	INTEGER,
 	"laptime_millis"	INTEGER NOT NULL,
@@ -421,22 +437,23 @@ CREATE_TABLE_LAP = """CREATE TABLE "Lap" (
 	FOREIGN KEY("driver_id") REFERENCES "Driver"("ID"),
 	FOREIGN KEY("session_id") REFERENCES "Session"("ID")
 )"""
-CREATE_TABLE_SESSION = """CREATE TABLE "Session" (
+CREATE_TABLE_SESSION = """CREATE TABLE IF NOT EXISTS "Session" (
 	"ID"	INTEGER,
 	"timestamp"	INTEGER,
 	"track_id"	INTEGER,
 	FOREIGN KEY("track_id") REFERENCES "Track"("ID"),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 )"""
-CREATE_TABLE_TRACK = """CREATE TABLE "Track" (
+CREATE_TABLE_TRACK = """CREATE TABLE IF NOT EXISTS "Track" (
 	"ID"	INTEGER,
-	"begin_date"	INTEGER NOT NULL,
-	"end_date"	INTEGER NOT NULL,
+	"begin_date"	INTEGER DEFAULT 0,
+	"end_date"	INTEGER DEFAULT 0,
 	"layout_image"	BLOB,
 	"layout_url"	TEXT,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 )"""
-CREATE_TABLE_TRACK_RECORD = """CREATE TABLE "Track_Record" (
+
+CREATE_TABLE_TRACK_RECORD = """CREATE TABLE IF NOT EXISTS "Track_Record" (
 	"ID"	INTEGER,
 	"driver_id"	INTEGER,
 	"laptime"	INTEGER,

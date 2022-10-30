@@ -2,7 +2,6 @@
 
 
 import imaplib, email, email.parser, email.policy
-from lib2to3.pgen2 import driver
 import html2text
 from . import credentials
 from bs4 import BeautifulSoup
@@ -45,6 +44,7 @@ class KartingManager():
         file.close()
 
 def parse_records(all_lines,session_id):
+    print(all_lines)
     record_start_index = get_start_records(all_lines)
     if record_start_index == -1:
         print("Couldn't find the start of the records")
@@ -296,6 +296,7 @@ def check_for_new_track_layout():
 
 def main():
     print("Starting karting_tracker")
+    karting_db.create_tables_if_dont_exist()
     check_for_new_track_layout()
     kartingManager = KartingManager()
     search_imap(kartingManager)
