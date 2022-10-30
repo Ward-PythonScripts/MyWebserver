@@ -105,8 +105,6 @@ def parse_lap_times_v2(all_lines,session_id):
             if all_lines[index].__contains__("270cc") or (len(all_lines[index]) <= 2 and all_lines[index].isdigit()):
                 #the end of all laptimes or a new kart -> save the parsed laptimes
                 if not first_driver:
-                    print(kartnr,driver_name,laptimes,session_id)
-                    exit() 
                     karting_db.store_lap_times(kartnr,driver_name,laptimes,session_id)
                 first_driver = False
                 laptimes = []
@@ -119,14 +117,12 @@ def parse_lap_times_v2(all_lines,session_id):
                 if not all_lines[index][0].isdigit():
                     prev = ""
                     wasName = True
+                    character_index = 0
                     for character in str(all_lines[index]):
-                        print(character,prev,wasName)
                         if wasName:
-                            if character.isdigit():
-                                print("prev was: ", prev)
+                            if character.isdigit() and check_if_first_elements_are_laptime(all_lines[index][character_index:-1]):
                                 wasName = False
                                 driver_name = prev
-                                print("driver name",driver_name)
                                 prev = character   
                             else:
                                 prev += character                    
@@ -136,11 +132,11 @@ def parse_lap_times_v2(all_lines,session_id):
                                 prev = ""
                             else:
                                 prev += character
+                        character_index += 1
                 else:
                     #we start with the continuation of laptimes
                     prev = ""
                     for character in str(all_lines[index]):
-                        print(character,prev,wasName)           
                         if character == " " and prev != "":
                             laptimes.append(prev)
                             prev = ""
@@ -148,14 +144,25 @@ def parse_lap_times_v2(all_lines,session_id):
                             prev += character
             index += 1
 
+def check_if_first_elements_are_laptime(elements):
+    index = 0
+    for character in elements:
+        if character == "." and index <=3:
+            #can indeed be a time
+            return True
+        if index >=6:
+            "aint gonna be a time anymore"
+            return False
+        index += 1
+    return False
+
 
 def parse_lap_times(all_lines,session_id):
-    print(all_lines)
     starting_index = get_start_lap_times(all_lines)
     if starting_index == -1:
         print("failed to find the start of the laptimes")
         #try via v2
-        parse_lap_times_v2(all_lines,session_id)
+        return parse_lap_times_v2(all_lines,session_id)
     else:
         """layout is as follows:
                 kartnr
